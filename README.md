@@ -1,3 +1,7 @@
-This is the website where I'll be posting blogs related to various things.
+This is the website where I'll be posting blogs related to various
+things. They can be read at
 
-Feel free to suggest any changes or make a pull request with those changes.
+	https://five-sh.github.io/
+
+Feel free to suggest any changes to the site or make a pull request with
+those changes.
