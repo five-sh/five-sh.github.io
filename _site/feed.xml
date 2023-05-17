@@ -1,1 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-05-17T17:53:51+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-05-18T00:14:13+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Warming up for GSoC’23</title><link href="http://localhost:4000/2023/05/17/warming-up-for-gsoc.html" rel="alternate" type="text/html" title="Warming up for GSoC’23" /><published>2023-05-17T00:00:00+05:30</published><updated>2023-05-17T00:00:00+05:30</updated><id>http://localhost:4000/2023/05/17/warming-up-for-gsoc</id><content type="html" xml:base="http://localhost:4000/2023/05/17/warming-up-for-gsoc.html">&lt;p&gt;I have been accepted for GSoC’23 as a contributor! I will be contributing
+to Git and the project I will be working on is&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;
+&lt;strong&gt; Unify ref-filter formats with other –pretty formats &lt;/strong&gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;My proposal can be read at &lt;a href=&quot;https://docs.google.com/document/d/1JBznA5n0WdWsbEskCeXxOnQuaa0urD89VtprxstLPzo/edit?usp=sharing&quot;&gt;GSoC_Proposal&lt;/a&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The Git Community has been very supportive and I have learnt so much
+in the time I spent with them before GSoC. Hoping that I will
+continue to learn while working on this project and bond more
+with the community.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;My mentors are
+&lt;br /&gt;
+	Christian Couder &amp;lt;christian.couder@gmail.com&amp;gt; &lt;br /&gt;
+	Hariom Verma &amp;lt;hariom18599@gmail.com&amp;gt;
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The main code repo, where I’ll be working at is &lt;a href=&quot;https://github.com/five-sh/git&quot;&gt;repo&lt;/a&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;what-now&quot;&gt;What Now?&lt;/h4&gt;
+&lt;p&gt;I am currently working on the duplication of the logic, in pretty, in
+ref-filter. Especially on the patches that Nsengiyumva Wilberforce sent
+regarding the duplication of logic that formats commit and tag signatures.
+Nsengiyumva’s patches can be read on the &lt;a href=&quot;https://lore.kernel.org/git/20230311210607.64927-1-nsengiyumvawilberforce@gmail.com/&quot;&gt;mailing list&lt;/a&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;These patches seem to breaking CI, so I am working on them (see &lt;a href=&quot;https://github.com/five-sh/git/commits/sign1&quot;&gt;branch&lt;/a&gt;)
+as they are really helpful in accomplishing the goal of this project.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The code for the files ref-filter.{c, h} and pretty.{c, h} can be read
+at the &lt;a href=&quot;https://github.com/git/git&quot;&gt;git repo&lt;/a&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I will be updating this blog weekly on Wednesdays, tracking my progress
+in that week.&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">I have been accepted for GSoC’23 as a contributor! I will be contributing to Git and the project I will be working on is</summary></entry></feed>
