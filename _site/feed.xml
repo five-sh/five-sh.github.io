@@ -1,4 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-01T23:59:34+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 1: The First Patches</title><link href="http://localhost:4000/2023/05/31/week1.html" rel="alternate" type="text/html" title="Week 1: The First Patches" /><published>2023-05-31T00:00:00+05:30</published><updated>2023-05-31T00:00:00+05:30</updated><id>http://localhost:4000/2023/05/31/week1</id><content type="html" xml:base="http://localhost:4000/2023/05/31/week1.html">&lt;p&gt;A lot of things happened this week and I don’t really know where to
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-07T23:13:28+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 2: Reading</title><link href="http://localhost:4000/2023/06/07/week2.html" rel="alternate" type="text/html" title="Week 2: Reading" /><published>2023-06-07T00:00:00+05:30</published><updated>2023-06-07T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/07/week2</id><content type="html" xml:base="http://localhost:4000/2023/06/07/week2.html">&lt;p&gt;Last week, I had sent out the patch series duplicating the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt;
+atom from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. Christian, Junio, Eric and Oswald
+left a few comments. One interesting change has been to the way we check
+for the version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GPG&lt;/code&gt; in the prereq &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GPG2&lt;/code&gt;. How I originally wrote
+it was&lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;gpg_version&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) 2.&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	say &lt;span class=&quot;s2&quot;&gt;&quot;This test requires a GPG version &amp;gt;= v2.0.0&quot;&lt;/span&gt;
+	&lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+	&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;
+Now this seems absurd because if we ever see a GPG v3 or v4 or so on, this
+won’t work. This can be overcome with&lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) 0.&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; | &lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) 1.&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;
+which Christian suggested and Eric suggested an improved version&lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;01].&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;
+which makes use of glob patterns and was something that I did not even
+think of.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;There have also been style changes pointed out by Oswald, which led me
+to think a bit more and I came up with the changes where we replace the
+use of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if-else&lt;/code&gt; with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;switch&lt;/code&gt; when checking for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt; options.
+This has the advantage of being more readable when compared to the
+previous construct.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;All of these changes have been sent out and can be seen on v3. As of the
+“What’s cooking in git.git” email sent out by Junio yesterday, these
+commits are on “seen”.&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;whats-cooking-in-my-fork&quot;&gt;What’s cooking in my fork?&lt;/h4&gt;
+
+&lt;p&gt;Apart from replying and amending the patch series according to the
+reviews, I have been reading through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;.
+Hariom came up with the idea of experimenting with a bridge between
+both the formats. Something like&lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;if atom exists for pretty arg:
+	use ref-filter format
+else
+	use pretty format
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;
+which is great for testing ref-filter formats. So I began tweaking some
+code and making changes. Nothing has been pushed yet though. I have also
+been reading through log and making sense of things. Parts of code has
+changed since Hariom and others worked on the project (which is obvious)
+and it has become even more simpler to write good and efficient code and
+to build on top of their code. It becomes even more apparent, day after
+day, the power that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git log&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git blame&lt;/code&gt; hold.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Apart from this, I’m thinking about working on other &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; formats
+which can be re-implemented in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. Specifically those which
+make the most sense in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. This should be fun.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time,&lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">Last week, I had sent out the patch series duplicating the signature atom from pretty into ref-filter. Christian, Junio, Eric and Oswald left a few comments. One interesting change has been to the way we check for the version of GPG in the prereq GPG2. How I originally wrote it was</summary></entry><entry><title type="html">Week 1: The First Patches</title><link href="http://localhost:4000/2023/05/31/week1.html" rel="alternate" type="text/html" title="Week 1: The First Patches" /><published>2023-05-31T00:00:00+05:30</published><updated>2023-05-31T00:00:00+05:30</updated><id>http://localhost:4000/2023/05/31/week1</id><content type="html" xml:base="http://localhost:4000/2023/05/31/week1.html">&lt;p&gt;A lot of things happened this week and I don’t really know where to
 begin. So I’ll start with the work I did and touch the other details
 as I go through them. &lt;br /&gt;&lt;/p&gt;
 

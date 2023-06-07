@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | Week 2: Reading</title>
+  <meta name="title" content="five-sh's website | Week 2: Reading"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | Week 2: Reading"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/06/07/week2"/>
+  <meta property="og:title" content="five-sh's website | Week 2: Reading"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/06/07/week2"/>
+  <meta property="twitter:title" content="five-sh's website | Week 2: Reading"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/06/07/week2"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              Week 2: Reading
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">June 7, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>Last week, I had sent out the patch series duplicating the <code class="language-plaintext highlighter-rouge">signature</code>
+atom from <code class="language-plaintext highlighter-rouge">pretty</code> into <code class="language-plaintext highlighter-rouge">ref-filter</code>. Christian, Junio, Eric and Oswald
+left a few comments. One interesting change has been to the way we check
+for the version of <code class="language-plaintext highlighter-rouge">GPG</code> in the prereq <code class="language-plaintext highlighter-rouge">GPG2</code>. How I originally wrote
+it was<br /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">case</span> <span class="s2">"</span><span class="si">$(</span>gpg_version<span class="si">)</span><span class="s2">"</span> <span class="k">in</span>
+<span class="o">!</span><span class="s2">"gpg (GnuPG) 2."</span><span class="k">*</span><span class="p">)</span>
+	say <span class="s2">"This test requires a GPG version &gt;= v2.0.0"</span>
+	<span class="nb">exit </span>1
+	<span class="p">;;</span>
+</code></pre></div></div>
+
+<p><br />
+Now this seems absurd because if we ever see a GPG v3 or v4 or so on, this
+won’t work. This can be overcome with<br /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"gpg (GnuPG) 0."</span><span class="k">*</span> | <span class="s2">"gpg (GnuPG) 1."</span><span class="k">*</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p><br />
+which Christian suggested and Eric suggested an improved version<br /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"gpg (GnuPG) "</span><span class="o">[</span>01].<span class="k">*</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p><br />
+which makes use of glob patterns and was something that I did not even
+think of.<br /></p>
+
+<p>There have also been style changes pointed out by Oswald, which led me
+to think a bit more and I came up with the changes where we replace the
+use of <code class="language-plaintext highlighter-rouge">if-else</code> with <code class="language-plaintext highlighter-rouge">switch</code> when checking for <code class="language-plaintext highlighter-rouge">signature</code> options.
+This has the advantage of being more readable when compared to the
+previous construct.<br /></p>
+
+<p>All of these changes have been sent out and can be seen on v3. As of the
+“What’s cooking in git.git” email sent out by Junio yesterday, these
+commits are on “seen”.<br /></p>
+
+<h4 id="whats-cooking-in-my-fork">What’s cooking in my fork?</h4>
+
+<p>Apart from replying and amending the patch series according to the
+reviews, I have been reading through <code class="language-plaintext highlighter-rouge">ref-filter</code> and <code class="language-plaintext highlighter-rouge">pretty</code>.
+Hariom came up with the idea of experimenting with a bridge between
+both the formats. Something like<br /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if atom exists for pretty arg:
+	use ref-filter format
+else
+	use pretty format
+</code></pre></div></div>
+
+<p><br />
+which is great for testing ref-filter formats. So I began tweaking some
+code and making changes. Nothing has been pushed yet though. I have also
+been reading through log and making sense of things. Parts of code has
+changed since Hariom and others worked on the project (which is obvious)
+and it has become even more simpler to write good and efficient code and
+to build on top of their code. It becomes even more apparent, day after
+day, the power that <code class="language-plaintext highlighter-rouge">git log</code> and <code class="language-plaintext highlighter-rouge">git blame</code> hold.<br /></p>
+
+<p>Apart from this, I’m thinking about working on other <code class="language-plaintext highlighter-rouge">pretty</code> formats
+which can be re-implemented in <code class="language-plaintext highlighter-rouge">ref-filter</code>. Specifically those which
+make the most sense in <code class="language-plaintext highlighter-rouge">ref-filter</code>. This should be fun.<br /></p>
+
+<p>‘til next time,<br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>
