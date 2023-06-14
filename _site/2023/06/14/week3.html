@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | Week 3: More logs</title>
+  <meta name="title" content="five-sh's website | Week 3: More logs"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | Week 3: More logs"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/06/14/week3"/>
+  <meta property="og:title" content="five-sh's website | Week 3: More logs"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/06/14/week3"/>
+  <meta property="twitter:title" content="five-sh's website | Week 3: More logs"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/06/14/week3"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              Week 3: More logs
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">June 14, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>This was a tough week and borderline unproductive. I spent the majority
+of the first half of the week reading logs, trying to get a good
+approach on Hariom’s idea. The whole weekend was just me sitting and
+thinking about a way to implement the idea in a maintainable and
+efficient manner.<br /></p>
+
+<p>The whole idea is based upon the fact that we should use ref-filter
+logic in pretty wherever possible and to do that we need to know if the
+atom corresponding to the placeholder exists. My approach to implementing
+the idea was using a atom-placeholder map which would have all the atoms
+(through <code class="language-plaintext highlighter-rouge">enum atom_type</code> in <code class="language-plaintext highlighter-rouge">ref-filter</code>) mapped to their corresponding
+placeholders. Now, if we want to know if a correspondence exists, we just
+need to look up the map and we’ll know (see this <a href="https://github.com/five-sh/git/commits/ref-filter-in-pretty">branch</a>).<br /></p>
+
+<p>Apart from being a mediocre idea, this has flaws which were not apparent
+when I was just thinking about the implementation but not actually
+implementing it (writing code). The biggest of them all is that the
+<code class="language-plaintext highlighter-rouge">enum atom_type</code> and the structs that it is a field of and the functions
+that make use of it and the structs are all internal to <code class="language-plaintext highlighter-rouge">ref-filter.c</code>
+(that is, they are defined as <code class="language-plaintext highlighter-rouge">static</code>s and cannot be used by other
+files).<br /></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">placeholder_atom_map</span> <span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">placeholder</span><span class="p">;</span>
+	<span class="k">enum</span> <span class="n">atom_type</span> <span class="n">atom</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">placeholders</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="p">{</span> <span class="s">"some placeholder"</span><span class="p">,</span> <span class="n">EQUIVALENT_ATOM</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">in_ref_filter</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">pl</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">look</span> <span class="n">up</span> <span class="n">the</span> <span class="n">map</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span>
+		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">size_t</span> <span class="nf">format_some_placeholder</span><span class="p">(</span><span class="n">related</span> <span class="n">args</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">placeholder</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">in_ref_filter</span><span class="p">(</span><span class="n">placeholder</span><span class="p">))</span> <span class="p">{</span>
+		<span class="n">use</span> <span class="n">ref</span><span class="o">-</span><span class="n">filter</span> <span class="n">logic</span><span class="p">;</span>
+		<span class="k">return</span> <span class="n">placeholder_len</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="n">use</span> <span class="n">pretty</span> <span class="n">logic</span> <span class="n">as</span> <span class="n">usual</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">placeholder_len</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p><br /></p>
+
+<p>So the above code won’t work and it is obvious that to make it work, we
+need to change things in ref-filter.c and ref-filter.h and it is exactly
+this that makes it a bad approach.<br /></p>
+
+<p>I told Christian and Hariom about this and they suggested that I look at
+some of Hariom’s previous work on this (<a href="https://github.com/harry-hov/git/commit/a07a2ab0d8c39900c098963a0c6f28c5ab359dca">Hariom’s commit</a>
+about <code class="language-plaintext highlighter-rouge">ref-filter</code> printing commits and <a href="https://github.com/harry-hov/git/commit/47b77e5cf37a1d478d82921a66eddfc611978a03">commit</a> about making <code class="language-plaintext highlighter-rouge">pretty</code> use
+<code class="language-plaintext highlighter-rouge">ref-filter</code> logic ).<br /></p>
+
+<h4 id="whats-happening-on-the-main-side-of-things">What’s happening on the main side of things?</h4>
+<p>As mentioned in my previous post, the above is essential for testing
+purposes only. So on the main side of things, I have been working on a
+<a href="https://docs.google.com/document/d/14NQw_YZpnAH7YX45ileU4m6jdAgKZSIfWJzUwtydEpY/edit?usp=sharing">transition table</a>
+between ref-formats and pretty formats. I have also started work on
+duplication of other placeholders into atoms and the one I’m
+currently working on is    <code class="language-plaintext highlighter-rouge">%(describe[:options])</code>.<br /></p>
+
+<p>This format gives a human-readable form of an object.<br /></p>
+
+<p>For a blob, this is given as a <code class="language-plaintext highlighter-rouge">&lt;commit-ish&gt;:&lt;path&gt;</code>, where <code class="language-plaintext highlighter-rouge">&lt;commit-ish&gt;</code>
+describes the first commit in which the blob occurs in a reverse
+revision-walk from HEAD.<br /></p>
+
+<p>For a commit, it goes to the most recent tag, suffixes it with the number
+of commits on top of it and the abreviated object name of the most recent
+commit.<br /></p>
+
+<p>For a tag, it just plainly shows the most recent tag. By default, it only
+shows annotated tags but we can also describe lightweight tags using <code class="language-plaintext highlighter-rouge">--tags</code>.<br /></p>
+
+<p>‘til next time,<br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>

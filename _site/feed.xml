@@ -1,4 +1,84 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-07T23:13:28+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 2: Reading</title><link href="http://localhost:4000/2023/06/07/week2.html" rel="alternate" type="text/html" title="Week 2: Reading" /><published>2023-06-07T00:00:00+05:30</published><updated>2023-06-07T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/07/week2</id><content type="html" xml:base="http://localhost:4000/2023/06/07/week2.html">&lt;p&gt;Last week, I had sent out the patch series duplicating the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-15T00:49:30+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 3: More logs</title><link href="http://localhost:4000/2023/06/14/week3.html" rel="alternate" type="text/html" title="Week 3: More logs" /><published>2023-06-14T00:00:00+05:30</published><updated>2023-06-14T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/14/week3</id><content type="html" xml:base="http://localhost:4000/2023/06/14/week3.html">&lt;p&gt;This was a tough week and borderline unproductive. I spent the majority
+of the first half of the week reading logs, trying to get a good
+approach on Hariom’s idea. The whole weekend was just me sitting and
+thinking about a way to implement the idea in a maintainable and
+efficient manner.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The whole idea is based upon the fact that we should use ref-filter
+logic in pretty wherever possible and to do that we need to know if the
+atom corresponding to the placeholder exists. My approach to implementing
+the idea was using a atom-placeholder map which would have all the atoms
+(through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;enum atom_type&lt;/code&gt; in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;) mapped to their corresponding
+placeholders. Now, if we want to know if a correspondence exists, we just
+need to look up the map and we’ll know (see this &lt;a href=&quot;https://github.com/five-sh/git/commits/ref-filter-in-pretty&quot;&gt;branch&lt;/a&gt;).&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Apart from being a mediocre idea, this has flaws which were not apparent
+when I was just thinking about the implementation but not actually
+implementing it (writing code). The biggest of them all is that the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;enum atom_type&lt;/code&gt; and the structs that it is a field of and the functions
+that make use of it and the structs are all internal to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter.c&lt;/code&gt;
+(that is, they are defined as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;static&lt;/code&gt;s and cannot be used by other
+files).&lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;placeholder_atom_map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;placeholder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;atom_type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;atom&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;placeholders&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;some placeholder&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EQUIVALENT_ATOM&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;in_ref_filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;look&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;up&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;the&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;found&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;format_some_placeholder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;related&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;placeholder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in_ref_filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;placeholder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;placeholder_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pretty&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logic&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;usual&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;placeholder_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;So the above code won’t work and it is obvious that to make it work, we
+need to change things in ref-filter.c and ref-filter.h and it is exactly
+this that makes it a bad approach.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I told Christian and Hariom about this and they suggested that I look at
+some of Hariom’s previous work on this (&lt;a href=&quot;https://github.com/harry-hov/git/commit/a07a2ab0d8c39900c098963a0c6f28c5ab359dca&quot;&gt;Hariom’s commit&lt;/a&gt;
+about &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; printing commits and &lt;a href=&quot;https://github.com/harry-hov/git/commit/47b77e5cf37a1d478d82921a66eddfc611978a03&quot;&gt;commit&lt;/a&gt; about making &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; use
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; logic ).&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;whats-happening-on-the-main-side-of-things&quot;&gt;What’s happening on the main side of things?&lt;/h4&gt;
+&lt;p&gt;As mentioned in my previous post, the above is essential for testing
+purposes only. So on the main side of things, I have been working on a
+&lt;a href=&quot;https://docs.google.com/document/d/14NQw_YZpnAH7YX45ileU4m6jdAgKZSIfWJzUwtydEpY/edit?usp=sharing&quot;&gt;transition table&lt;/a&gt;
+between ref-formats and pretty formats. I have also started work on
+duplication of other placeholders into atoms and the one I’m
+currently working on is    &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(describe[:options])&lt;/code&gt;.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;This format gives a human-readable form of an object.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;For a blob, this is given as a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;commit-ish&amp;gt;:&amp;lt;path&amp;gt;&lt;/code&gt;, where &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;commit-ish&amp;gt;&lt;/code&gt;
+describes the first commit in which the blob occurs in a reverse
+revision-walk from HEAD.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;For a commit, it goes to the most recent tag, suffixes it with the number
+of commits on top of it and the abreviated object name of the most recent
+commit.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;For a tag, it just plainly shows the most recent tag. By default, it only
+shows annotated tags but we can also describe lightweight tags using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--tags&lt;/code&gt;.&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time,&lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This was a tough week and borderline unproductive. I spent the majority of the first half of the week reading logs, trying to get a good approach on Hariom’s idea. The whole weekend was just me sitting and thinking about a way to implement the idea in a maintainable and efficient manner.</summary></entry><entry><title type="html">Week 2: Reading</title><link href="http://localhost:4000/2023/06/07/week2.html" rel="alternate" type="text/html" title="Week 2: Reading" /><published>2023-06-07T00:00:00+05:30</published><updated>2023-06-07T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/07/week2</id><content type="html" xml:base="http://localhost:4000/2023/06/07/week2.html">&lt;p&gt;Last week, I had sent out the patch series duplicating the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt;
 atom from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. Christian, Junio, Eric and Oswald
 left a few comments. One interesting change has been to the way we check
 for the version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GPG&lt;/code&gt; in the prereq &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GPG2&lt;/code&gt;. How I originally wrote
