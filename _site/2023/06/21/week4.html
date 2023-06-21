@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | Week 4: The describe atom and friends</title>
+  <meta name="title" content="five-sh's website | Week 4: The describe atom and friends"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | Week 4: The describe atom and friends"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/06/21/week4"/>
+  <meta property="og:title" content="five-sh's website | Week 4: The describe atom and friends"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/06/21/week4"/>
+  <meta property="twitter:title" content="five-sh's website | Week 4: The describe atom and friends"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/06/21/week4"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              Week 4: The describe atom and friends
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">June 21, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>For the past week (actually, even from a little before that), I’ve been
+working on duplicating the implementation of <code class="language-plaintext highlighter-rouge">%(describe)</code> and its friends
+from <code class="language-plaintext highlighter-rouge">pretty</code> to <code class="language-plaintext highlighter-rouge">ref-filter</code>. I haven’t sent them to the mailing list
+yet because they need to be cleaned up before that. So it’s still in
+a discussion phase between Christian, Hariom and me. <br /></p>
+
+<p>I faced a few challenges initially after the first (and rough)
+implementation of <code class="language-plaintext highlighter-rouge">describe</code>. One of them was the code that dealt with
+taking a boolean value for <code class="language-plaintext highlighter-rouge">describe:tags=&lt;bool&gt;</code>. I initially wrote it
+this way <br /></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">strtoul_ui</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">tagbool</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+    <span class="p">(</span><span class="n">tagbool</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">tagbool</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">error</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<p>where <code class="language-plaintext highlighter-rouge">strtoul_ui()</code> takes a string <code class="language-plaintext highlighter-rouge">arg</code> as input, given the base to
+which we want to convert it to (here <code class="language-plaintext highlighter-rouge">10</code>), will convert the string
+number to unsinged int number and put it in <code class="language-plaintext highlighter-rouge">tagbool</code>. For example, <code class="language-plaintext highlighter-rouge">"14"</code>
+will give <code class="language-plaintext highlighter-rouge">14</code>. It returns <code class="language-plaintext highlighter-rouge">0</code> on success and <code class="language-plaintext highlighter-rouge">-1</code> otherwise. This function
+is kind of a wrapper around the <code class="language-plaintext highlighter-rouge">strtoul()</code> function which does not have
+the property of returning errors and it takes negative inputs. <br /></p>
+
+<p>The above code seems to fail tests on CI as it doesn’t work as it is
+intended to. <br /></p>
+
+<p>I pushed this work onto my fork (it can be read on branch <a href="https://github.com/five-sh/git/commits/describe">“describe”</a>)
+and we had a call that day so I thought we could discuss a bit about it
+while also discussing about the transition table that I had made the
+week before. <br /></p>
+
+<p>In the call, I told Hariom that I was not really happy with the code
+dealing with <code class="language-plaintext highlighter-rouge">describe:tags=&lt;bool&gt;</code> and that it was failing the tests. He
+suggested to use gdb (GNU Debugger) to see what was going wrong. <br /></p>
+
+<p>Now, I have a bit of a history with <code class="language-plaintext highlighter-rouge">gdb</code>. I tried to learn to use it a long
+time ago and it hadn’t really made any sense to me at that time and I
+gave up, eventually. So I was kind of hestiant of using it but thought
+why not give it another try. <br /></p>
+
+<p>The power of this tool is huge. The time you take to analyze the code
+drastically reduces and it just makes making changes to the code so easy.
+It can also be used to read code, in the sense that we are always able
+to see what are the functions being called and in what files
+they are in. <br /></p>
+
+<p>I especially found the post <a href="https://github.com/edith007/siddharthasthana.dev/blob/main/source/_posts/Using%20GDB%20for%20Debugging%20in%20Git.md">“Using GDB for Debugging in Git”</a> by Siddharth
+Asthana, to be super helpful. <br /></p>
+
+<p>Coming back to the call, Christian, Hariom and I discussed about the
+possible changes to the transition table and also discussed a bit about
+supporting <code class="language-plaintext highlighter-rouge">.mailmap</code> options in <code class="language-plaintext highlighter-rouge">ref-filter</code>.
+<br /></p>
+
+<p>Apart from this, I also wrote a small patch to fix a test in
+<code class="language-plaintext highlighter-rouge">t4205-log-pretty-formats.sh</code> as a test regarding the <code class="language-plaintext highlighter-rouge">describe:abbrev=...</code>
+option was not really doing what it should (it can be read on the branch
+<a href="https://github.com/five-sh/git/commits/t4205-describe-fix">“t4205-describe-fix”</a>).
+<br /></p>
+
+<h4 id="work-on-using-ref-filter-in-pretty">Work on using <code class="language-plaintext highlighter-rouge">ref-filter</code> in <code class="language-plaintext highlighter-rouge">pretty</code></h4>
+
+<p>Unfortunately, I haven’t been able to put that much work onto this
+yet after my previous attempt. I really liked the idea of how Hariom
+used a function instead to map between the different atoms and the
+corresponding placeholders. So I think I’ll be doing something on
+similar lines too instead of the stupid approach I took last time.
+Maybe refactor some code in it and tweak it to work directly with
+<code class="language-plaintext highlighter-rouge">pretty</code>? I don’t know.
+<br /></p>
+
+<p>‘til next time, <br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>

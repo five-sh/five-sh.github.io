@@ -1,4 +1,127 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-15T00:49:30+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 3: More logs</title><link href="http://localhost:4000/2023/06/14/week3.html" rel="alternate" type="text/html" title="Week 3: More logs" /><published>2023-06-14T00:00:00+05:30</published><updated>2023-06-14T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/14/week3</id><content type="html" xml:base="http://localhost:4000/2023/06/14/week3.html">&lt;p&gt;This was a tough week and borderline unproductive. I spent the majority
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-29T01:13:38+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 5: Getting familiar with .mailmap</title><link href="http://localhost:4000/2023/06/28/week5.html" rel="alternate" type="text/html" title="Week 5: Getting familiar with .mailmap" /><published>2023-06-28T00:00:00+05:30</published><updated>2023-06-28T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/28/week5</id><content type="html" xml:base="http://localhost:4000/2023/06/28/week5.html">&lt;p&gt;As already mentioned in my last week’s post, I’ve been working the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom. This week, I worked on improving it and fixing parts
+of the tests based on the comments that Christian made on the first
+version. The changes can be read on the branch &lt;a href=&quot;https://github.com/five-sh/git/commits/describe2&quot;&gt;“describe2”&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The tests still don’t seem to pass. After spending considerable
+amount of time redoing them and trying to understand what was actually
+going on, I asked Christian. He took a look at my branch and gave a
+really nice explanation as to what was really going on and how we can
+possibly fix it. So I think we can fix it now. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I also received comments on “t4205-describe-fix” and changed it (just
+some minor improvements on the way we do things). The changes can be
+read on the branch &lt;a href=&quot;https://github.com/five-sh/git/commits/t4205-describe-fix3&quot;&gt;“t4205-describe-fix3”&lt;/a&gt;. I have also sent this patch
+to the &lt;a href=&quot;https://lore.kernel.org/git/20230628181753.10384-1-five231003@gmail.com/&quot;&gt;mailing list&lt;/a&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;the-mailmap-options&quot;&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options&lt;/h4&gt;
+
+&lt;p&gt;A &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; file is a file which has the author and their respective
+emails information. Git basically looks for this file in the top-level
+of the repo by default or if the config variables for the path are set,
+then it uses that file. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;This file is very useful when the repo consists of various authors and
+committers and if any of them have more than one way in which their name
+is set or if they have multiple emails. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options are used in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; when displaying author names,
+author emails, committer names, commiter emails and for reflog identity
+name and email. Since &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; doesn’t yet have the reflog options,
+the inital attempt would be so that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; can use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; for
+author names and emails and committer names and emails. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;To make use of these options in through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;, Christian suggested
+to read through the patches that Siddharth Asthana sent regarding the
+integration of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git cat-file&lt;/code&gt;. His work on it can be
+read &lt;a href=&quot;https://lore.kernel.org/git/20220630142444.651948-1-siddharthasthana31@gmail.com/&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;https://lore.kernel.org/git/20220916205946.178925-1-siddharthasthana31@gmail.com/&quot;&gt;here&lt;/a&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I’ve spent this week reading through his work on this and thinking about
+the possible approach that can be taken.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Hariom’s idea is still cooking in my local branch, nothing interesting to
+show yet but this will not be the case next week.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">As already mentioned in my last week’s post, I’ve been working the describe atom. This week, I worked on improving it and fixing parts of the tests based on the comments that Christian made on the first version. The changes can be read on the branch “describe2”.</summary></entry><entry><title type="html">Week 4: The describe atom and friends</title><link href="http://localhost:4000/2023/06/21/week4.html" rel="alternate" type="text/html" title="Week 4: The describe atom and friends" /><published>2023-06-21T00:00:00+05:30</published><updated>2023-06-21T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/21/week4</id><content type="html" xml:base="http://localhost:4000/2023/06/21/week4.html">&lt;p&gt;For the past week (actually, even from a little before that), I’ve been
+working on duplicating the implementation of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(describe)&lt;/code&gt; and its friends
+from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. I haven’t sent them to the mailing list
+yet because they need to be cleaned up before that. So it’s still in
+a discussion phase between Christian, Hariom and me. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I faced a few challenges initially after the first (and rough)
+implementation of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt;. One of them was the code that dealt with
+taking a boolean value for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe:tags=&amp;lt;bool&amp;gt;&lt;/code&gt;. I initially wrote it
+this way &lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;strtoul_ui&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tagbool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tagbool&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tagbool&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;where &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;strtoul_ui()&lt;/code&gt; takes a string &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arg&lt;/code&gt; as input, given the base to
+which we want to convert it to (here &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;10&lt;/code&gt;), will convert the string
+number to unsinged int number and put it in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tagbool&lt;/code&gt;. For example, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&quot;14&quot;&lt;/code&gt;
+will give &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;14&lt;/code&gt;. It returns &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0&lt;/code&gt; on success and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-1&lt;/code&gt; otherwise. This function
+is kind of a wrapper around the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;strtoul()&lt;/code&gt; function which does not have
+the property of returning errors and it takes negative inputs. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The above code seems to fail tests on CI as it doesn’t work as it is
+intended to. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I pushed this work onto my fork (it can be read on branch &lt;a href=&quot;https://github.com/five-sh/git/commits/describe&quot;&gt;“describe”&lt;/a&gt;)
+and we had a call that day so I thought we could discuss a bit about it
+while also discussing about the transition table that I had made the
+week before. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the call, I told Hariom that I was not really happy with the code
+dealing with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe:tags=&amp;lt;bool&amp;gt;&lt;/code&gt; and that it was failing the tests. He
+suggested to use gdb (GNU Debugger) to see what was going wrong. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, I have a bit of a history with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gdb&lt;/code&gt;. I tried to learn to use it a long
+time ago and it hadn’t really made any sense to me at that time and I
+gave up, eventually. So I was kind of hestiant of using it but thought
+why not give it another try. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The power of this tool is huge. The time you take to analyze the code
+drastically reduces and it just makes making changes to the code so easy.
+It can also be used to read code, in the sense that we are always able
+to see what are the functions being called and in what files
+they are in. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I especially found the post &lt;a href=&quot;https://github.com/edith007/siddharthasthana.dev/blob/main/source/_posts/Using%20GDB%20for%20Debugging%20in%20Git.md&quot;&gt;“Using GDB for Debugging in Git”&lt;/a&gt; by Siddharth
+Asthana, to be super helpful. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Coming back to the call, Christian, Hariom and I discussed about the
+possible changes to the transition table and also discussed a bit about
+supporting &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Apart from this, I also wrote a small patch to fix a test in
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;t4205-log-pretty-formats.sh&lt;/code&gt; as a test regarding the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe:abbrev=...&lt;/code&gt;
+option was not really doing what it should (it can be read on the branch
+&lt;a href=&quot;https://github.com/five-sh/git/commits/t4205-describe-fix&quot;&gt;“t4205-describe-fix”&lt;/a&gt;).
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;work-on-using-ref-filter-in-pretty&quot;&gt;Work on using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;Unfortunately, I haven’t been able to put that much work onto this
+yet after my previous attempt. I really liked the idea of how Hariom
+used a function instead to map between the different atoms and the
+corresponding placeholders. So I think I’ll be doing something on
+similar lines too instead of the stupid approach I took last time.
+Maybe refactor some code in it and tweak it to work directly with
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;? I don’t know.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">For the past week (actually, even from a little before that), I’ve been working on duplicating the implementation of %(describe) and its friends from pretty to ref-filter. I haven’t sent them to the mailing list yet because they need to be cleaned up before that. So it’s still in a discussion phase between Christian, Hariom and me.</summary></entry><entry><title type="html">Week 3: More logs</title><link href="http://localhost:4000/2023/06/14/week3.html" rel="alternate" type="text/html" title="Week 3: More logs" /><published>2023-06-14T00:00:00+05:30</published><updated>2023-06-14T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/14/week3</id><content type="html" xml:base="http://localhost:4000/2023/06/14/week3.html">&lt;p&gt;This was a tough week and borderline unproductive. I spent the majority
 of the first half of the week reading logs, trying to get a good
 approach on Hariom’s idea. The whole weekend was just me sitting and
 thinking about a way to implement the idea in a maintainable and
@@ -59,7 +182,7 @@ about &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-fil
 &lt;h4 id=&quot;whats-happening-on-the-main-side-of-things&quot;&gt;What’s happening on the main side of things?&lt;/h4&gt;
 &lt;p&gt;As mentioned in my previous post, the above is essential for testing
 purposes only. So on the main side of things, I have been working on a
-&lt;a href=&quot;https://docs.google.com/document/d/14NQw_YZpnAH7YX45ileU4m6jdAgKZSIfWJzUwtydEpY/edit?usp=sharing&quot;&gt;transition table&lt;/a&gt;
+&lt;a href=&quot;https://docs.google.com/spreadsheets/d/1XKNbp1azKi2IFHzdkQSGS-dgnb98XM128lTXuszHTTA/edit?usp=sharing&quot;&gt;transition table&lt;/a&gt;
 between ref-formats and pretty formats. I have also started work on
 duplication of other placeholders into atoms and the one I’m
 currently working on is    &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(describe[:options])&lt;/code&gt;.&lt;br /&gt;&lt;/p&gt;
