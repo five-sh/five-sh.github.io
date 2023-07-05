@@ -1,4 +1,75 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-30T21:23:26+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 5: Getting familiar with .mailmap</title><link href="http://localhost:4000/2023/06/28/week5.html" rel="alternate" type="text/html" title="Week 5: Getting familiar with .mailmap" /><published>2023-06-28T00:00:00+05:30</published><updated>2023-06-28T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/28/week5</id><content type="html" xml:base="http://localhost:4000/2023/06/28/week5.html">&lt;p&gt;As already mentioned in my last week’s post, I’ve been working on the
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-07-06T01:14:42+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 6: The complete describe atom</title><link href="http://localhost:4000/2023/07/05/week6.html" rel="alternate" type="text/html" title="Week 6: The complete describe atom" /><published>2023-07-05T00:00:00+05:30</published><updated>2023-07-05T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/05/week6</id><content type="html" xml:base="http://localhost:4000/2023/07/05/week6.html">&lt;p&gt;This week has almost only been cleaning up the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom code and
+making it ready to be a proper patch series that can be sent out to the
+mailing list. So no new work has been put into either &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; or
+Hariom’s idea, which is kind of sad because I have been postponing it
+for a while now, especially Hariom’s idea but things should settle in
+this week. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;interesting-stuff&quot;&gt;Interesting stuff&lt;/h4&gt;
+&lt;p&gt;A couple of interesting things popped up while I was cleaning up the
+“describe” atom code. The first one being that a totally unrelated test
+was failing on linux-sha256 (CI). The reason this test was failing,
+particularly on linux-sha256 was because of the change in the raw:size
+of certain objects due to new commits and tags that were added as part
+of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; tests. This would re-arrange the refs when sorting and
+hence the test would fail. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;So, I wrote another &lt;a href=&quot;https://github.com/five-sh/git/commit/43cd3eef3cd55b8c78cc619050ae7c98430b7f05&quot;&gt;commit&lt;/a&gt; to fix this. This commit takes the approach of
+making all the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; related tests run on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe-repo&lt;/code&gt; (a repo
+exclusively for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; tests to run), instead of the usual main repo
+of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;t6300-for-each-ref.sh&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I originally thought to squash this commit onto the duplication commit,
+but Christian suggested that it deserves an explanation and I agree with
+him. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I sent these patches to the mailing list (this fix commit on top of the
+duplication commit). They can be read on this &lt;a href=&quot;https://lore.kernel.org/git/20230705175942.21090-1-five231003@gmail.com/&quot;&gt;thread&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Another thing I came across was the output of the following command when
+run in the trash directory of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;t6300&lt;/code&gt; right after the “Verify sorts with
+raw:size” test.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(refname) %(raw:size)&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;raw:size refs/heads/main refs/myblobs/ refs/mytrees/first
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;which gives&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;refs/myblobs/blob8 0
+refs/myblobs/first 17
+refs/myblobs/blob7 2
+refs/myblobs/blob4 3
+refs/heads/main 446
+refs/myblobs/blob1 5
+refs/myblobs/blob2 5
+refs/myblobs/blob3 6
+refs/myblobs/blob5 6
+refs/myblobs/blob6 6
+refs/mytrees/first 64
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;which is strange because the sorting seems to happens while only taking
+into account the first digit of raw:size. I don’t know if this is expected
+and if it was not, then I would need to dig a little more deeper for this.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;According to the “What’s cooking” email sent on June 30, the change in
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(describe:abbrev=...)&lt;/code&gt; test in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;t4205-log-pretty-formats.sh&lt;/code&gt; is on its
+way to master. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Christian sent out a reply to “What’s cooking” saying that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt;
+atom patches where ready to be merged (they had been on “Needs review” for
+a while now) since they had seen so many changes and the current version
+was looking good. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I have also made sure to change the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(describe:abbrev=...)&lt;/code&gt; test in the
+duplication of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; too. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This week has almost only been cleaning up the describe atom code and making it ready to be a proper patch series that can be sent out to the mailing list. So no new work has been put into either .mailmap or Hariom’s idea, which is kind of sad because I have been postponing it for a while now, especially Hariom’s idea but things should settle in this week.</summary></entry><entry><title type="html">Week 5: Getting familiar with .mailmap</title><link href="http://localhost:4000/2023/06/28/week5.html" rel="alternate" type="text/html" title="Week 5: Getting familiar with .mailmap" /><published>2023-06-28T00:00:00+05:30</published><updated>2023-06-28T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/28/week5</id><content type="html" xml:base="http://localhost:4000/2023/06/28/week5.html">&lt;p&gt;As already mentioned in my last week’s post, I’ve been working on the
 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom. This week, I worked on improving it and fixing parts
 of the tests based on the comments that Christian made on the first
 version. The changes can be read on the branch &lt;a href=&quot;https://github.com/five-sh/git/commits/describe2&quot;&gt;“describe2”&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;

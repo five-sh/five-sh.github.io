@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | Week 6: The complete describe atom</title>
+  <meta name="title" content="five-sh's website | Week 6: The complete describe atom"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | Week 6: The complete describe atom"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/07/05/week6"/>
+  <meta property="og:title" content="five-sh's website | Week 6: The complete describe atom"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/07/05/week6"/>
+  <meta property="twitter:title" content="five-sh's website | Week 6: The complete describe atom"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/07/05/week6"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              Week 6: The complete describe atom
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">July 5, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>This week has almost only been cleaning up the <code class="language-plaintext highlighter-rouge">describe</code> atom code and
+making it ready to be a proper patch series that can be sent out to the
+mailing list. So no new work has been put into either <code class="language-plaintext highlighter-rouge">.mailmap</code> or
+Hariom’s idea, which is kind of sad because I have been postponing it
+for a while now, especially Hariom’s idea but things should settle in
+this week. <br /></p>
+
+<h4 id="interesting-stuff">Interesting stuff</h4>
+<p>A couple of interesting things popped up while I was cleaning up the
+“describe” atom code. The first one being that a totally unrelated test
+was failing on linux-sha256 (CI). The reason this test was failing,
+particularly on linux-sha256 was because of the change in the raw:size
+of certain objects due to new commits and tags that were added as part
+of the <code class="language-plaintext highlighter-rouge">describe</code> tests. This would re-arrange the refs when sorting and
+hence the test would fail. <br /></p>
+
+<p>So, I wrote another <a href="https://github.com/five-sh/git/commit/43cd3eef3cd55b8c78cc619050ae7c98430b7f05">commit</a> to fix this. This commit takes the approach of
+making all the <code class="language-plaintext highlighter-rouge">describe</code> related tests run on <code class="language-plaintext highlighter-rouge">describe-repo</code> (a repo
+exclusively for <code class="language-plaintext highlighter-rouge">describe</code> tests to run), instead of the usual main repo
+of <code class="language-plaintext highlighter-rouge">t6300-for-each-ref.sh</code>. <br /></p>
+
+<p>I originally thought to squash this commit onto the duplication commit,
+but Christian suggested that it deserves an explanation and I agree with
+him. <br /></p>
+
+<p>I sent these patches to the mailing list (this fix commit on top of the
+duplication commit). They can be read on this <a href="https://lore.kernel.org/git/20230705175942.21090-1-five231003@gmail.com/">thread</a>. <br /></p>
+
+<p>Another thing I came across was the output of the following command when
+run in the trash directory of <code class="language-plaintext highlighter-rouge">t6300</code> right after the “Verify sorts with
+raw:size” test.
+<br /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git <span class="k">for</span><span class="nt">-each-ref</span> <span class="nt">--format</span><span class="o">=</span><span class="s2">"%(refname) %(raw:size)"</span> <span class="nt">--sort</span><span class="o">=</span>raw:size refs/heads/main refs/myblobs/ refs/mytrees/first
+</code></pre></div></div>
+<p><br /></p>
+
+<p>which gives</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>refs/myblobs/blob8 0
+refs/myblobs/first 17
+refs/myblobs/blob7 2
+refs/myblobs/blob4 3
+refs/heads/main 446
+refs/myblobs/blob1 5
+refs/myblobs/blob2 5
+refs/myblobs/blob3 6
+refs/myblobs/blob5 6
+refs/myblobs/blob6 6
+refs/mytrees/first 64
+</code></pre></div></div>
+<p><br /></p>
+
+<p>which is strange because the sorting seems to happens while only taking
+into account the first digit of raw:size. I don’t know if this is expected
+and if it was not, then I would need to dig a little more deeper for this.
+<br /></p>
+
+<p>According to the “What’s cooking” email sent on June 30, the change in
+<code class="language-plaintext highlighter-rouge">%(describe:abbrev=...)</code> test in <code class="language-plaintext highlighter-rouge">t4205-log-pretty-formats.sh</code> is on its
+way to master. <br /></p>
+
+<p>Christian sent out a reply to “What’s cooking” saying that the <code class="language-plaintext highlighter-rouge">signature</code>
+atom patches where ready to be merged (they had been on “Needs review” for
+a while now) since they had seen so many changes and the current version
+was looking good. <br /></p>
+
+<p>I have also made sure to change the <code class="language-plaintext highlighter-rouge">%(describe:abbrev=...)</code> test in the
+duplication of <code class="language-plaintext highlighter-rouge">describe</code> too. <br /></p>
+
+<p>‘til next time, <br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>
