@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | Week 7: The not-so-complete describe atom</title>
+  <meta name="title" content="five-sh's website | Week 7: The not-so-complete describe atom"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | Week 7: The not-so-complete describe atom"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/07/12/week7"/>
+  <meta property="og:title" content="five-sh's website | Week 7: The not-so-complete describe atom"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/07/12/week7"/>
+  <meta property="twitter:title" content="five-sh's website | Week 7: The not-so-complete describe atom"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/07/12/week7"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              Week 7: The not-so-complete describe atom
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">July 12, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>Okay. So, as I’ve written last time, I sent the patches to the mailing
+list, which I thought were perfect. Turns out they weren’t. There
+are many things wrong with how we implement the <code class="language-plaintext highlighter-rouge">describe</code> atom which
+Junio pointed out in his <a href="https://lore.kernel.org/git/xmqqbkgpdljy.fsf@gitster.g/">reply</a>. <br /></p>
+
+<p>First of which is, when doing something like</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git <span class="k">for</span><span class="nt">-each-ref</span> <span class="nt">--format</span><span class="o">=</span><span class="s2">"%(describe:tags=yes)"</span> refs/tags/
+</code></pre></div></div>
+
+<p>gives an error because according to the code, we just parse for integer
+values. <code class="language-plaintext highlighter-rouge">config.h</code> has a function <code class="language-plaintext highlighter-rouge">git_parse_maybe_bool()</code> which can be
+used to parse values such as “yes, no, true, false”, which are perfectly
+valid but are not handled by the current code. <br /></p>
+
+<p>Second, we can’t parse multiple options</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git <span class="k">for</span><span class="nt">-each-ref</span> <span class="nt">--format</span><span class="o">=</span><span class="s2">"%(describe:tags=yes,abbrev=14)"</span> refs/tags/
+</code></pre></div></div>
+
+<p>will give an error saying that the boolean arg for <code class="language-plaintext highlighter-rouge">tags</code> is not proper
+or something similar for anything which is used in place of <code class="language-plaintext highlighter-rouge">tags</code>. We
+can overcome this by properly parsing the options, probably something
+similar to <code class="language-plaintext highlighter-rouge">pretty</code>. <br /></p>
+
+<p>Third is the clarity of the data structure we use as the basis of the
+describe atom</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="p">{</span>
+	<span class="k">enum</span> <span class="p">{</span> <span class="n">D_BARE</span><span class="p">,</span> <span class="n">D_TAGS</span><span class="p">,</span> <span class="n">D_ABBREV</span><span class="p">,</span> <span class="n">D_MATCH</span><span class="p">,</span> <span class="n">D_EXCLUDE</span> <span class="p">}</span> <span class="n">option</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">tagbool</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">length</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">pattern</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">describe</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>One can’t really tell where we are using <code class="language-plaintext highlighter-rouge">tagbool</code> (a very bad variable
+name), <code class="language-plaintext highlighter-rouge">length</code> and <code class="language-plaintext highlighter-rouge">pattern</code> exactly w.r.t. its corresponding option.
+Also, for obvious reasons, this struct doesn’t really work for multiple
+options we are discussed above. <br /></p>
+
+<p>Apart from these, Junio also suggested that we document this atom in a
+different way which would be more clear and I agree. <br /></p>
+
+<h4 id="a-possible-solution">A possible solution</h4>
+
+<p>So, coming to fixing this mess, I have some work locally which is similar
+to the approach taken in <code class="language-plaintext highlighter-rouge">pretty</code> (which I haven’t pushed to my fork yet
+since for some reason it’s sending SIGSEGV, <code class="language-plaintext highlighter-rouge">gdb</code> here I come). We introduce
+two new functions <code class="language-plaintext highlighter-rouge">match_atom_arg_value()</code> and <code class="language-plaintext highlighter-rouge">match_atom_bool_arg()</code>,
+which are similar to the functions <code class="language-plaintext highlighter-rouge">match_placeholder_arg_value()</code> and
+<code class="language-plaintext highlighter-rouge">match_placeholder_bool_arg()</code> in <code class="language-plaintext highlighter-rouge">pretty</code>. <br /></p>
+
+<p>These functions are used for parsing multiple option arguments given to
+<code class="language-plaintext highlighter-rouge">--pretty=</code>, for example in the case of <code class="language-plaintext highlighter-rouge">trailers</code>, where <code class="language-plaintext highlighter-rouge">trailers</code> can
+take multiple sub-options like <code class="language-plaintext highlighter-rouge">key</code> and <code class="language-plaintext highlighter-rouge">seperator</code> at a time. That is</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git log <span class="nt">--pretty</span><span class="o">=</span><span class="s2">"%(trailers:key=Helped-By,separator=%x2C )"</span>
+</code></pre></div></div>
+
+<p>where we get all the trailers with “Helped-By”, separated by a comma. <br /></p>
+
+<p>The implementation of <code class="language-plaintext highlighter-rouge">describe</code> in <code class="language-plaintext highlighter-rouge">pretty</code> also makes use of these functions
+to parse multiple options so I think making use of them <code class="language-plaintext highlighter-rouge">ref-filter</code> would
+be great in the sense that future atoms may also of make use of these. <br /></p>
+
+<p>I haven’t really discussed this Christian and Hariom yet, regarding the
+apporach. I’ll do it once I have pushed things. <br /></p>
+
+<h4 id="whats-happening-with-the-other-stuff">What’s happening with the other stuff?</h4>
+
+<p>I have started working on Hariom’s idea again while waiting for the
+review on the <code class="language-plaintext highlighter-rouge">describe</code> atom and I am mainly focusing on the
+<code class="language-plaintext highlighter-rouge">convert_format()</code> function which plays the central role in the whole
+thing. <br /></p>
+
+<p>The function basically converts any <code class="language-plaintext highlighter-rouge">pretty</code> format into <code class="language-plaintext highlighter-rouge">ref-filter</code>
+format, if there is a map. We can use this directly in <code class="language-plaintext highlighter-rouge">pretty</code> and
+tweak the other functions in <code class="language-plaintext highlighter-rouge">pretty</code> to do things accordingly. <br /></p>
+
+<p>I haven’t pushed this to my fork yet as the code doesn’t really work
+as I intended it to, so I need to make some changes. <br /></p>
+
+<p>Coming to <code class="language-plaintext highlighter-rouge">.mailmap</code> options, I haven’t worked on them this week but
+I should be able to it once v2 of <code class="language-plaintext highlighter-rouge">describe</code> atom goes out. <br /></p>
+
+<p>Apart from these, according to the latest “What’s Cooking” email (Jul 10),
+the patch regarding the <code class="language-plaintext highlighter-rouge">describe:abbrev=&lt;number&gt;</code> test has been merged to
+master and the patches regarding <code class="language-plaintext highlighter-rouge">signature</code> atom made it into next and
+are now on their way to master which is cool. <br /></p>
+
+<p>Hoping that v2 of <code class="language-plaintext highlighter-rouge">describe</code> atom is much better. <br /></p>
+
+<p>‘til next time, <br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>

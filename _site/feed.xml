@@ -1,4 +1,98 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-07-06T01:14:42+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 6: The complete describe atom</title><link href="http://localhost:4000/2023/07/05/week6.html" rel="alternate" type="text/html" title="Week 6: The complete describe atom" /><published>2023-07-05T00:00:00+05:30</published><updated>2023-07-05T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/05/week6</id><content type="html" xml:base="http://localhost:4000/2023/07/05/week6.html">&lt;p&gt;This week has almost only been cleaning up the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom code and
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-07-13T01:01:14+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 7: The not-so-complete describe atom</title><link href="http://localhost:4000/2023/07/12/week7.html" rel="alternate" type="text/html" title="Week 7: The not-so-complete describe atom" /><published>2023-07-12T00:00:00+05:30</published><updated>2023-07-12T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/12/week7</id><content type="html" xml:base="http://localhost:4000/2023/07/12/week7.html">&lt;p&gt;Okay. So, as I’ve written last time, I sent the patches to the mailing
+list, which I thought were perfect. Turns out they weren’t. There
+are many things wrong with how we implement the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom which
+Junio pointed out in his &lt;a href=&quot;https://lore.kernel.org/git/xmqqbkgpdljy.fsf@gitster.g/&quot;&gt;reply&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;First of which is, when doing something like&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(describe:tags=yes)&quot;&lt;/span&gt; refs/tags/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;gives an error because according to the code, we just parse for integer
+values. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;config.h&lt;/code&gt; has a function &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git_parse_maybe_bool()&lt;/code&gt; which can be
+used to parse values such as “yes, no, true, false”, which are perfectly
+valid but are not handled by the current code. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Second, we can’t parse multiple options&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(describe:tags=yes,abbrev=14)&quot;&lt;/span&gt; refs/tags/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;will give an error saying that the boolean arg for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tags&lt;/code&gt; is not proper
+or something similar for anything which is used in place of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tags&lt;/code&gt;. We
+can overcome this by properly parsing the options, probably something
+similar to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Third is the clarity of the data structure we use as the basis of the
+describe atom&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_BARE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_TAGS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_ABBREV&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_MATCH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;D_EXCLUDE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;option&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tagbool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pattern&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;One can’t really tell where we are using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tagbool&lt;/code&gt; (a very bad variable
+name), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;length&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pattern&lt;/code&gt; exactly w.r.t. its corresponding option.
+Also, for obvious reasons, this struct doesn’t really work for multiple
+options we are discussed above. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Apart from these, Junio also suggested that we document this atom in a
+different way which would be more clear and I agree. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;a-possible-solution&quot;&gt;A possible solution&lt;/h4&gt;
+
+&lt;p&gt;So, coming to fixing this mess, I have some work locally which is similar
+to the approach taken in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; (which I haven’t pushed to my fork yet
+since for some reason it’s sending SIGSEGV, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gdb&lt;/code&gt; here I come). We introduce
+two new functions &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_atom_arg_value()&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_atom_bool_arg()&lt;/code&gt;,
+which are similar to the functions &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_placeholder_arg_value()&lt;/code&gt; and
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_placeholder_bool_arg()&lt;/code&gt; in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;These functions are used for parsing multiple option arguments given to
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--pretty=&lt;/code&gt;, for example in the case of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;trailers&lt;/code&gt;, where &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;trailers&lt;/code&gt; can
+take multiple sub-options like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;key&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;seperator&lt;/code&gt; at a time. That is&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git log &lt;span class=&quot;nt&quot;&gt;--pretty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(trailers:key=Helped-By,separator=%x2C )&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;where we get all the trailers with “Helped-By”, separated by a comma. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The implementation of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; also makes use of these functions
+to parse multiple options so I think making use of them &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; would
+be great in the sense that future atoms may also of make use of these. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I haven’t really discussed this Christian and Hariom yet, regarding the
+apporach. I’ll do it once I have pushed things. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;whats-happening-with-the-other-stuff&quot;&gt;What’s happening with the other stuff?&lt;/h4&gt;
+
+&lt;p&gt;I have started working on Hariom’s idea again while waiting for the
+review on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom and I am mainly focusing on the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;convert_format()&lt;/code&gt; function which plays the central role in the whole
+thing. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The function basically converts any &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; format into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;
+format, if there is a map. We can use this directly in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; and
+tweak the other functions in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; to do things accordingly. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I haven’t pushed this to my fork yet as the code doesn’t really work
+as I intended it to, so I need to make some changes. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Coming to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options, I haven’t worked on them this week but
+I should be able to it once v2 of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom goes out. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Apart from these, according to the latest “What’s Cooking” email (Jul 10),
+the patch regarding the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe:abbrev=&amp;lt;number&amp;gt;&lt;/code&gt; test has been merged to
+master and the patches regarding &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt; atom made it into next and
+are now on their way to master which is cool. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Hoping that v2 of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom is much better. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">Okay. So, as I’ve written last time, I sent the patches to the mailing list, which I thought were perfect. Turns out they weren’t. There are many things wrong with how we implement the describe atom which Junio pointed out in his reply.</summary></entry><entry><title type="html">Week 6: The complete describe atom</title><link href="http://localhost:4000/2023/07/05/week6.html" rel="alternate" type="text/html" title="Week 6: The complete describe atom" /><published>2023-07-05T00:00:00+05:30</published><updated>2023-07-05T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/05/week6</id><content type="html" xml:base="http://localhost:4000/2023/07/05/week6.html">&lt;p&gt;This week has almost only been cleaning up the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom code and
 making it ready to be a proper patch series that can be sent out to the
 mailing list. So no new work has been put into either &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; or
 Hariom’s idea, which is kind of sad because I have been postponing it
