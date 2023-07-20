@@ -1,4 +1,172 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-07-13T01:01:14+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 7: The not-so-complete describe atom</title><link href="http://localhost:4000/2023/07/12/week7.html" rel="alternate" type="text/html" title="Week 7: The not-so-complete describe atom" /><published>2023-07-12T00:00:00+05:30</published><updated>2023-07-12T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/12/week7</id><content type="html" xml:base="http://localhost:4000/2023/07/12/week7.html">&lt;p&gt;Okay. So, as I’ve written last time, I sent the patches to the mailing
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-07-27T01:54:36+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 9: Implementing the .mailmap options</title><link href="http://localhost:4000/2023/07/26/week9.html" rel="alternate" type="text/html" title="Week 9: Implementing the .mailmap options" /><published>2023-07-26T00:00:00+05:30</published><updated>2023-07-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/26/week9</id><content type="html" xml:base="http://localhost:4000/2023/07/26/week9.html">&lt;p&gt;I’ve started actually implementing the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; options into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
+Christian, Hariom and I have decided that we will go with options spelled
+out as, for example, &lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(authoremail:mailmap,trim)&quot;&lt;/span&gt; refs/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;so that we use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; by specifying “&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt;” in the options of the
+atom. Currently the goal is to only apply &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; to the atoms
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;authorname, authoremail&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;committername, committeremail&lt;/code&gt; and leave
+out the trailers (for now). &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I started out with making &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--format=&quot;%(authoremail:mailmap)&quot;&lt;/code&gt; and its
+friends work. The approach taken is as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;The function &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_email()&lt;/code&gt; grabs the email values of a given commit
+or tag buffer and modifies them according to the options given to the
+atom.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;To add &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; support, that is, to grab these values from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt;
+instead, we need to modify this buffer so that the buffer shows the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; equivalents.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;We do this by checking if we have a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; arg in
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;person_email_atom_parser()&lt;/code&gt; and if we have one, we modify the given
+buffer by calling &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apply_mailmap_to_header()&lt;/code&gt; on it.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;This buffer is then modified according to the options given, that is
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nothing&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;trim&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;localpart&lt;/code&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;A similar approach can also be taken to implement &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; for the name
+of an author or committer (in which case &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_name()&lt;/code&gt; has to be changed).
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I haven’t pushed the changes I made to implement &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; to email
+because there are some minor things that need to be fixed.&lt;/p&gt;
+
+&lt;h4 id=&quot;-git-status-describe-atom&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$ git status describe-atom&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;According to the recent “What’s cooking” email, the describe atom patches
+are ready to be merged into next. A lot of cool discussions happened
+during the reviews. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Junio suggested the possiblity of having unit tests written for the
+functions &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_atom_arg_value()&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_atom_bool_arg()&lt;/code&gt;.
+The people at Google have been working on adding a unit test suite to
+Git, written in C. Unit tests help in working testing individual
+functions, which is obviously a great advantage. More info about the
+discussion around the adding unit tests to Git are these &lt;a href=&quot;https://lore.kernel.org/git/20230427175007.902278-1-calvinwan@google.com/&quot;&gt;patches&lt;/a&gt;.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Junio said that these functions would be kind of an ideal candidate for
+something to run unit tests on as these functions when called can lead
+to so many condidtions and we don’t really get to fully to use them
+in order to test them. Also with unit tests, we have the added advantage
+of documentation as unit tests give a clear understanding of what a
+particular function needs to do. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Another thing that was discussed was to generalize the way we parse
+multiple options as we are beginning to see them more often in the
+code. Junio suggested that we do something similar to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parse_config_key()&lt;/code&gt;
+in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;config.c&lt;/code&gt; in which case , we use this to parse config options like&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;section.&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;subsection.&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;?key
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I learnt quite a bit from these reviews and the discussions around them. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The patches that are to be merged in next are in &lt;a href=&quot;https://lore.kernel.org/git/20230723162717.68123-1-five231003@gmail.com/&quot;&gt;v4&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I’ve also made a bit of a progress on using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;
+where I worked on changing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;convert_format()&lt;/code&gt;, which converts &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;
+placeholders to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; atoms, to return the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref format&lt;/code&gt; instead
+of the the placeholder length, in hope that this can then be use to pass
+onto a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; function to grab the necessary values instead of
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; doing all the work. Although pretty printing must be done
+by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;‘til next time,
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve started actually implementing the mailmap options into ref-filter. Christian, Hariom and I have decided that we will go with options spelled out as, for example,</summary></entry><entry><title type="html">Week 8: The .mailmap options</title><link href="http://localhost:4000/2023/07/19/week8.html" rel="alternate" type="text/html" title="Week 8: The .mailmap options" /><published>2023-07-19T00:00:00+05:30</published><updated>2023-07-19T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/19/week8</id><content type="html" xml:base="http://localhost:4000/2023/07/19/week8.html">&lt;p&gt;This week I started the work on adding &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
+I had been reading the &lt;a href=&quot;https://lore.kernel.org/git/20220718195102.66321-1-siddharthasthana31@gmail.com/&quot;&gt;patches&lt;/a&gt; that Siddharth Asthana sent in regards
+to adding &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cat-file&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;These patches are particularly interesting because of refactoring they do
+before the actual addition of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cat-file&lt;/code&gt;. The refactoring
+is done so that we can grab the headers of commits (or tags)
+effectively and we also make the function that does it public so that
+it can be used elsewhere. The latter change is especially important, because
+that means that we can use this function in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; too (although to grab
+only the headers and use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; for them). &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The function that does the above is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apply_mailmap_to_header()&lt;/code&gt; and this can
+be called in a seperate function, local to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;, which can be used to
+replace the headers with their appropriate &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; entries. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;It would also be natural to expect that we are able to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt;
+for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;trailers&lt;/code&gt; in a commit or a tag as well, since these are also a part
+of the commit or tag where we find names and emails. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Actually, in the same thread that the above patches were sent to,
+Christian brings up a nice use case where this might matter and suggests
+a possible &lt;a href=&quot;https://lore.kernel.org/git/CAP8UFD3ohjS0p02SKwqKWBK1=sVuC9+iDT4at2R9ktCUXme9rA@mail.gmail.com/&quot;&gt;starting point&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Coming to the design, I’m not really sure what to do here. There are two
+ways in which we can do things: &lt;br /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Follow &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cat-file&lt;/code&gt; and introduce a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--[no-]use-mailmap&lt;/code&gt; to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;for-each-ref&lt;/code&gt;
+possibly.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Follow &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; and add new options to say atom like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(authorname)&lt;/code&gt;. So
+something like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(authorname:mailmap)&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The second way is more verbose and I kind of prefer the first one
+since we could do something like &lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--use-mailmap&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(authorname) %(authoremail)&quot;&lt;/span&gt; refs/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;the-work-on-describe-atom-in-ref-filter&quot;&gt;The work on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;&lt;/h4&gt;
+&lt;p&gt;The describe atom patches are currently in v3. I re-rolled with this
+version which largely simplified things in how &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom was
+implemented in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-fitler&lt;/code&gt;. For parsing the describe options, we just
+do &lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;describe_args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;now. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I was worried about us &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;err&lt;/code&gt;ing in the right places because the
+implementation before this had not really taken care of it and it was
+kind of hard to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;err&lt;/code&gt; with that implementation. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Christian suggested that we split out the option parsing code from
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe_atom_parser()&lt;/code&gt; so that we can &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;err&lt;/code&gt; correctly. This was really
+good and this makes things easier to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;err&lt;/code&gt; whenever something goes wrong. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Hariom suggested that, instead of adding new functions to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;,
+we should rather refactor the functions in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; and make them public
+so that we are able to use them here without re-implementing them. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;what-else-is-cooking&quot;&gt;What else is cooking?&lt;/h4&gt;
+&lt;p&gt;I didn’t take out any time to work on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;convert_format()&lt;/code&gt; (related to
+Hariom’s idea) this week, which is embarrasing at this point. Was a bit
+busy with college work, but I did make some progress on it though. Trying
+to figure out where it will fit into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty_print_commit()&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I experimented a bit with it by trying to call it in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;format_commit_one()&lt;/code&gt;,
+but that was a total failure. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I also attended Review Club this week which discussed the addition of
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(decorate:&amp;lt;options&amp;gt;)&lt;/code&gt; placeholder in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;. Except for the socializing
+part, I was pretty much silent and lurked in the background. I had a great
+time and it was pretty fun. Thanks Glen, Jonathan, Calvin and Jacob. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This week I started the work on adding .mailmap options to ref-filter. I had been reading the patches that Siddharth Asthana sent in regards to adding .mailmap options to cat-file.</summary></entry><entry><title type="html">Week 7: The not-so-complete describe atom</title><link href="http://localhost:4000/2023/07/12/week7.html" rel="alternate" type="text/html" title="Week 7: The not-so-complete describe atom" /><published>2023-07-12T00:00:00+05:30</published><updated>2023-07-12T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/12/week7</id><content type="html" xml:base="http://localhost:4000/2023/07/12/week7.html">&lt;p&gt;Okay. So, as I’ve written last time, I sent the patches to the mailing
 list, which I thought were perfect. Turns out they weren’t. There
 are many things wrong with how we implement the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom which
 Junio pointed out in his &lt;a href=&quot;https://lore.kernel.org/git/xmqqbkgpdljy.fsf@gitster.g/&quot;&gt;reply&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;

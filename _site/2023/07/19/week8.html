@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | Week 8: The .mailmap options</title>
+  <meta name="title" content="five-sh's website | Week 8: The .mailmap options"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | Week 8: The .mailmap options"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/07/19/week8"/>
+  <meta property="og:title" content="five-sh's website | Week 8: The .mailmap options"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/07/19/week8"/>
+  <meta property="twitter:title" content="five-sh's website | Week 8: The .mailmap options"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/07/19/week8"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              Week 8: The .mailmap options
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">July 19, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>This week I started the work on adding <code class="language-plaintext highlighter-rouge">.mailmap</code> options to <code class="language-plaintext highlighter-rouge">ref-filter</code>.
+I had been reading the <a href="https://lore.kernel.org/git/20220718195102.66321-1-siddharthasthana31@gmail.com/">patches</a> that Siddharth Asthana sent in regards
+to adding <code class="language-plaintext highlighter-rouge">.mailmap</code> options to <code class="language-plaintext highlighter-rouge">cat-file</code>. <br /></p>
+
+<p>These patches are particularly interesting because of refactoring they do
+before the actual addition of <code class="language-plaintext highlighter-rouge">.mailmap</code> to <code class="language-plaintext highlighter-rouge">cat-file</code>. The refactoring
+is done so that we can grab the headers of commits (or tags)
+effectively and we also make the function that does it public so that
+it can be used elsewhere. The latter change is especially important, because
+that means that we can use this function in <code class="language-plaintext highlighter-rouge">ref-filter</code> too (although to grab
+only the headers and use <code class="language-plaintext highlighter-rouge">.mailmap</code> for them). <br /></p>
+
+<p>The function that does the above is <code class="language-plaintext highlighter-rouge">apply_mailmap_to_header()</code> and this can
+be called in a seperate function, local to <code class="language-plaintext highlighter-rouge">ref-filter</code>, which can be used to
+replace the headers with their appropriate <code class="language-plaintext highlighter-rouge">.mailmap</code> entries. <br /></p>
+
+<p>It would also be natural to expect that we are able to use <code class="language-plaintext highlighter-rouge">.mailmap</code>
+for <code class="language-plaintext highlighter-rouge">trailers</code> in a commit or a tag as well, since these are also a part
+of the commit or tag where we find names and emails. <br /></p>
+
+<p>Actually, in the same thread that the above patches were sent to,
+Christian brings up a nice use case where this might matter and suggests
+a possible <a href="https://lore.kernel.org/git/CAP8UFD3ohjS0p02SKwqKWBK1=sVuC9+iDT4at2R9ktCUXme9rA@mail.gmail.com/">starting point</a>. <br /></p>
+
+<p>Coming to the design, I’m not really sure what to do here. There are two
+ways in which we can do things: <br /></p>
+
+<ul>
+  <li>
+    <p>Follow <code class="language-plaintext highlighter-rouge">cat-file</code> and introduce a <code class="language-plaintext highlighter-rouge">--[no-]use-mailmap</code> to <code class="language-plaintext highlighter-rouge">for-each-ref</code>
+possibly.</p>
+  </li>
+  <li>
+    <p>Follow <code class="language-plaintext highlighter-rouge">pretty</code> and add new options to say atom like <code class="language-plaintext highlighter-rouge">%(authorname)</code>. So
+something like <code class="language-plaintext highlighter-rouge">%(authorname:mailmap)</code>. <br /></p>
+  </li>
+</ul>
+
+<p>The second way is more verbose and I kind of prefer the first one
+since we could do something like <br /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git <span class="k">for</span><span class="nt">-each-ref</span> <span class="nt">--use-mailmap</span> <span class="nt">--format</span><span class="o">=</span><span class="s2">"%(authorname) %(authoremail)"</span> refs/
+</code></pre></div></div>
+
+<h4 id="the-work-on-describe-atom-in-ref-filter">The work on <code class="language-plaintext highlighter-rouge">describe</code> atom in <code class="language-plaintext highlighter-rouge">ref-filter</code></h4>
+<p>The describe atom patches are currently in v3. I re-rolled with this
+version which largely simplified things in how <code class="language-plaintext highlighter-rouge">describe</code> atom was
+implemented in <code class="language-plaintext highlighter-rouge">ref-fitler</code>. For parsing the describe options, we just
+do <br /></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">describe_args</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>now. <br /></p>
+
+<p>I was worried about us <code class="language-plaintext highlighter-rouge">err</code>ing in the right places because the
+implementation before this had not really taken care of it and it was
+kind of hard to <code class="language-plaintext highlighter-rouge">err</code> with that implementation. <br /></p>
+
+<p>Christian suggested that we split out the option parsing code from
+<code class="language-plaintext highlighter-rouge">describe_atom_parser()</code> so that we can <code class="language-plaintext highlighter-rouge">err</code> correctly. This was really
+good and this makes things easier to <code class="language-plaintext highlighter-rouge">err</code> whenever something goes wrong. <br /></p>
+
+<p>Hariom suggested that, instead of adding new functions to <code class="language-plaintext highlighter-rouge">ref-filter</code>,
+we should rather refactor the functions in <code class="language-plaintext highlighter-rouge">pretty</code> and make them public
+so that we are able to use them here without re-implementing them. <br /></p>
+
+<h4 id="what-else-is-cooking">What else is cooking?</h4>
+<p>I didn’t take out any time to work on <code class="language-plaintext highlighter-rouge">convert_format()</code> (related to
+Hariom’s idea) this week, which is embarrasing at this point. Was a bit
+busy with college work, but I did make some progress on it though. Trying
+to figure out where it will fit into <code class="language-plaintext highlighter-rouge">pretty_print_commit()</code>. <br /></p>
+
+<p>I experimented a bit with it by trying to call it in <code class="language-plaintext highlighter-rouge">format_commit_one()</code>,
+but that was a total failure. <br /></p>
+
+<p>I also attended Review Club this week which discussed the addition of
+<code class="language-plaintext highlighter-rouge">%(decorate:&lt;options&gt;)</code> placeholder in <code class="language-plaintext highlighter-rouge">pretty</code>. Except for the socializing
+part, I was pretty much silent and lurked in the background. I had a great
+time and it was pretty fun. Thanks Glen, Jonathan, Calvin and Jacob. <br /></p>
+
+<p>‘til next time, <br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>
