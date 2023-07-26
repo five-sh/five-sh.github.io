@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-07-27T01:54:36+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 9: Implementing the .mailmap options</title><link href="http://localhost:4000/2023/07/26/week9.html" rel="alternate" type="text/html" title="Week 9: Implementing the .mailmap options" /><published>2023-07-26T00:00:00+05:30</published><updated>2023-07-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/26/week9</id><content type="html" xml:base="http://localhost:4000/2023/07/26/week9.html">&lt;p&gt;I’ve started actually implementing the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; options into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-02T23:53:22+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 9: Implementing the .mailmap options</title><link href="http://localhost:4000/2023/07/26/week9.html" rel="alternate" type="text/html" title="Week 9: Implementing the .mailmap options" /><published>2023-07-26T00:00:00+05:30</published><updated>2023-07-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/26/week9</id><content type="html" xml:base="http://localhost:4000/2023/07/26/week9.html">&lt;p&gt;I’ve started actually implementing the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; options into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
 Christian, Hariom and I have decided that we will go with options spelled
 out as, for example, &lt;br /&gt;&lt;/p&gt;
 
@@ -51,9 +51,9 @@ during the reviews. &lt;br /&gt;&lt;/p&gt;
 &lt;p&gt;Junio suggested the possiblity of having unit tests written for the
 functions &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_atom_arg_value()&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match_atom_bool_arg()&lt;/code&gt;.
 The people at Google have been working on adding a unit test suite to
-Git, written in C. Unit tests help in working testing individual
-functions, which is obviously a great advantage. More info about the
-discussion around the adding unit tests to Git are these &lt;a href=&quot;https://lore.kernel.org/git/20230427175007.902278-1-calvinwan@google.com/&quot;&gt;patches&lt;/a&gt;.
+Git, written in C. Unit tests help in testing individual functions, which
+is obviously a great advantage. More info about the discussion around
+the adding unit tests to Git are these &lt;a href=&quot;https://lore.kernel.org/git/20230427175007.902278-1-calvinwan@google.com/&quot;&gt;patches&lt;/a&gt;.
 &lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;Junio said that these functions would be kind of an ideal candidate for
@@ -81,9 +81,9 @@ placeholders to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&
 of the the placeholder length, in hope that this can then be use to pass
 onto a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; function to grab the necessary values instead of
 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; doing all the work. Although pretty printing must be done
-by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;.&lt;/p&gt;
+by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;‘til next time,
+&lt;p&gt;‘til next time, &lt;br /&gt;
 Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve started actually implementing the mailmap options into ref-filter. Christian, Hariom and I have decided that we will go with options spelled out as, for example,</summary></entry><entry><title type="html">Week 8: The .mailmap options</title><link href="http://localhost:4000/2023/07/19/week8.html" rel="alternate" type="text/html" title="Week 8: The .mailmap options" /><published>2023-07-19T00:00:00+05:30</published><updated>2023-07-19T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/19/week8</id><content type="html" xml:base="http://localhost:4000/2023/07/19/week8.html">&lt;p&gt;This week I started the work on adding &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
 I had been reading the &lt;a href=&quot;https://lore.kernel.org/git/20220718195102.66321-1-siddharthasthana31@gmail.com/&quot;&gt;patches&lt;/a&gt; that Siddharth Asthana sent in regards
 to adding &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cat-file&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
