@@ -1,4 +1,81 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-02T23:53:22+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 9: Implementing the .mailmap options</title><link href="http://localhost:4000/2023/07/26/week9.html" rel="alternate" type="text/html" title="Week 9: Implementing the .mailmap options" /><published>2023-07-26T00:00:00+05:30</published><updated>2023-07-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/26/week9</id><content type="html" xml:base="http://localhost:4000/2023/07/26/week9.html">&lt;p&gt;I’ve started actually implementing the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; options into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-04T12:02:52+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 10: Code can be cleaner</title><link href="http://localhost:4000/2023/08/02/week10.html" rel="alternate" type="text/html" title="Week 10: Code can be cleaner" /><published>2023-08-02T00:00:00+05:30</published><updated>2023-08-02T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/02/week10</id><content type="html" xml:base="http://localhost:4000/2023/08/02/week10.html">&lt;p&gt;The mailmap options have finally taken form and I have pushed the initial
+version to my fork with the branch name “&lt;a href=&quot;https://github.com/five-sh/git/commits/mailmap0&quot;&gt;mailmap0&lt;/a&gt;”. The approach used is as
+described in my previous post with some additional changes so that we now can
+also grab mailmap values for the name atoms (that is, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(authorname)&lt;/code&gt;,
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(committername)&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(taggername)&lt;/code&gt;). &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The function that does this grabbing is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;change_to_mailmap_value()&lt;/code&gt;, which reads
+the mailmap and if an entry exists, grabs it and changes our buffer accordingly,
+giving us the mailmap version of the email or name or both. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The additional changes that I mention above are to the function
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;find_wholine()&lt;/code&gt;. What this function does is that it finds the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;author&lt;/code&gt;,
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;committer&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tagger&lt;/code&gt; lines (if they exist) and strips off the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;who&lt;/code&gt;
+part of the first such occurrence and returns the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;refs/foo/bar&lt;/code&gt; buffer.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The changes were made so that we now return the whole buffer, because we need
+the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;who&lt;/code&gt; part of this buffer for mailmap purposes (code in mailmap wants this
+info). The subsequent code was also changed so that we do actually skip the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;who&lt;/code&gt;
+part where ever needed.&lt;/p&gt;
+
+&lt;p&gt;Christian took a look at the commits and left a few comments which were really
+helpful and which I agree should definitely go into the changed version of these
+commits. Those changes are&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Instead of always returning the whole buffer from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;find_wholine()&lt;/code&gt;, we should
+rather add a flag so that we can control the skipping of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;who&lt;/code&gt; part.&lt;/li&gt;
+  &lt;li&gt;When handling the options of the email, we normally use an enum which has all
+the possible options with 0 to final_option - 1 indexing. Instead of this, we
+should rather use bit fields, which has a number of advantages and makes the
+code a lot cleaner and easy to err wherever we want (more info at this
+&lt;a href=&quot;https://github.com/five-sh/git/commit/ee38de44399fb90140f46c88d4ccef206400b498#r123438198&quot;&gt;comment&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The current code only handles options in a specific order and errs if they
+are not in that order. For example,&lt;/p&gt;
+
+    &lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(authoremail:mailmap,trim)&quot;&lt;/span&gt; refs/heads/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;is fine, but&lt;/p&gt;
+
+    &lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;%(authoremail:trim,mailmap)&quot;&lt;/span&gt; refs/heads/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;errs. So the implementation needs to change a bit so that this is allowed
+too. Anyone using this option obviously expects this also to work.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There were also some other minor comments about refactoring things for more
+cleanness. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;apart-from-the-mailmap-options&quot;&gt;Apart from the mailmap options&lt;/h4&gt;
+
+&lt;p&gt;For the last many posts, I have been saying that I am making progress on
+Hariom’s idea but I haven’t pushed anything because most of it gets stashed
+and then dropped. This especially happened in the last week because I shifted my
+focus a bit from mailmap and worked on this.&lt;/p&gt;
+
+&lt;p&gt;Every time I use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gdb&lt;/code&gt; for some seg fault or some other error where the output
+for the code that I wrote is not what I expected, I learn something new about
+the command and how it calls the different functions and what serves as a pipe
+to what. This kind of changes things in the code that I already wrote and I’ve
+slowly began to realize that the code I wrote was wrong for many reasons and
+the reason mostly being that one should also keep in mind how the command runs
+and jumps from function to function TOP to BOTTOM and not BOTTOM to TOP. BOTTOM
+to TOP was the only view I had till now and this lead to writing code that would
+unnecessarily call private functions and when you compile such a thing, you
+obviously get an error and you try to somehow make the functions public but what
+you should be thinking about is how you should make use of the public functions
+so that they automatically handle the private functions themselves and give you
+what you need. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;This seems kind of obvious now but I somehow didn’t realize it all this
+while. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">The mailmap options have finally taken form and I have pushed the initial version to my fork with the branch name “mailmap0”. The approach used is as described in my previous post with some additional changes so that we now can also grab mailmap values for the name atoms (that is, %(authorname), %(committername) and %(taggername)).</summary></entry><entry><title type="html">Week 9: Implementing the .mailmap options</title><link href="http://localhost:4000/2023/07/26/week9.html" rel="alternate" type="text/html" title="Week 9: Implementing the .mailmap options" /><published>2023-07-26T00:00:00+05:30</published><updated>2023-07-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/07/26/week9</id><content type="html" xml:base="http://localhost:4000/2023/07/26/week9.html">&lt;p&gt;I’ve started actually implementing the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt; options into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;.
 Christian, Hariom and I have decided that we will go with options spelled
 out as, for example, &lt;br /&gt;&lt;/p&gt;
 
@@ -689,48 +766,4 @@ is the script which is facilitates the use of OAuth2 in Mutt.
 &lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;‘til next time, &lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">A lot of things happened this week and I don’t really know where to begin. So I’ll start with the work I did and touch the other details as I go through them.</summary></entry><entry><title type="html">Warming up for GSoC’23</title><link href="http://localhost:4000/2023/05/17/warming-up-for-gsoc.html" rel="alternate" type="text/html" title="Warming up for GSoC’23" /><published>2023-05-17T00:00:00+05:30</published><updated>2023-05-17T00:00:00+05:30</updated><id>http://localhost:4000/2023/05/17/warming-up-for-gsoc</id><content type="html" xml:base="http://localhost:4000/2023/05/17/warming-up-for-gsoc.html">&lt;p&gt;I have been accepted for GSoC’23 as a contributor! I will be contributing
-to Git and the project I will be working on is&lt;/p&gt;
-
-&lt;p&gt;&lt;br /&gt;
-&lt;strong&gt; Unify ref-filter formats with other –pretty formats &lt;/strong&gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;My proposal can be read at &lt;a href=&quot;https://docs.google.com/document/d/1JBznA5n0WdWsbEskCeXxOnQuaa0urD89VtprxstLPzo/edit?usp=sharing&quot;&gt;GSoC-Proposal&lt;/a&gt;.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;The Git Community has been very supportive and I have learnt so much
-in the time I spent with them before GSoC. Hoping that I will
-continue to learn while working on this project and bond more
-with the community.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;My mentors are
-&lt;br /&gt;
-	Christian Couder &amp;lt;christian.couder@gmail.com&amp;gt; &lt;br /&gt;
-	Hariom Verma &amp;lt;hariom18599@gmail.com&amp;gt;
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;The main code repo, where I’ll be working at is &lt;a href=&quot;https://github.com/five-sh/git&quot;&gt;repo&lt;/a&gt;.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;what-now&quot;&gt;What Now?&lt;/h4&gt;
-&lt;p&gt;I am currently working on the duplication of the logic, in pretty, in
-ref-filter. Especially on the patches that Nsengiyumva Wilberforce sent
-regarding the duplication of logic that formats commit and tag signatures.
-Nsengiyumva’s patches can be read on the &lt;a href=&quot;https://lore.kernel.org/git/20230311210607.64927-1-nsengiyumvawilberforce@gmail.com/&quot;&gt;mailing list&lt;/a&gt;.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;These patches seem to breaking CI, so I am working on them (see &lt;a href=&quot;https://github.com/five-sh/git/commits/sign1&quot;&gt;branch&lt;/a&gt;)
-as they are really helpful in accomplishing the goal of this project.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;The code for the files &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter.{c, h}&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty.{c, h}&lt;/code&gt; can be read
-at the &lt;a href=&quot;https://github.com/git/git&quot;&gt;git repo&lt;/a&gt;.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;I will be updating this blog weekly on Wednesdays, tracking my progress
-in that week.&lt;/p&gt;
-
-&lt;p&gt;‘til next time, &lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">I have been accepted for GSoC’23 as a contributor! I will be contributing to Git and the project I will be working on is</summary></entry></feed>
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">A lot of things happened this week and I don’t really know where to begin. So I’ll start with the work I did and touch the other details as I go through them.</summary></entry></feed>
