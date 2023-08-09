@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | Week 11: Another possible approach at mailmap options</title>
+  <meta name="title" content="five-sh's website | Week 11: Another possible approach at mailmap options"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | Week 11: Another possible approach at mailmap options"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/08/09/week11"/>
+  <meta property="og:title" content="five-sh's website | Week 11: Another possible approach at mailmap options"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/08/09/week11"/>
+  <meta property="twitter:title" content="five-sh's website | Week 11: Another possible approach at mailmap options"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/08/09/week11"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              Week 11: Another possible approach at mailmap options
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">August 9, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>This week was a bit unproductive as I was sick for a few days and couldn’t
+really get any work done in that time. I was able to add the docs and the tests
+to the changed implementation from Christian’s comments last week though. So now
+the implementation looks a bit like this <br /></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">enum</span> <span class="p">{</span>
+	<span class="n">EO_RAW</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">0</span><span class="p">,</span>
+	<span class="n">EO_TRIM</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span>
+	<span class="n">EO_LOCALPART</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">2</span><span class="p">,</span>
+	<span class="n">EO_MAILMAP</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">}</span> <span class="n">option</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>We parse the options of the given relevant format with
+<code class="language-plaintext highlighter-rouge">email_atom_option_parser()</code> and loop through it in <code class="language-plaintext highlighter-rouge">person_email_atom_parser()</code>
+to store them in <code class="language-plaintext highlighter-rouge">struct used_atom</code> (the looping is done atmost two times, with
+the only option we can comibine <code class="language-plaintext highlighter-rouge">trim</code> or <code class="language-plaintext highlighter-rouge">localpart</code> is with <code class="language-plaintext highlighter-rouge">mailmap</code>). <br /></p>
+
+<p>We then perform bit operations to get the asked values which are stored in
+<code class="language-plaintext highlighter-rouge">struct used_atom</code>. This part is done in <code class="language-plaintext highlighter-rouge">copy_email()</code> which is then called by
+<code class="language-plaintext highlighter-rouge">grab_person()</code> to get the values according to the option parsing. <br /></p>
+
+<h4 id="another-approach">Another approach</h4>
+
+<p>In the above way of implementing things, we transform the buffer passed to get
+the email value, according to the options, to conform with .mailmap file or the
+config variable set. However, we do this transforming step precisely thrice.
+Once in <code class="language-plaintext highlighter-rouge">copy_line()</code>, whenever we pass something like <code class="language-plaintext highlighter-rouge">%(author)</code> to
+<code class="language-plaintext highlighter-rouge">--format=&lt;format&gt;</code>. In <code class="language-plaintext highlighter-rouge">copy_name()</code>, for <code class="language-plaintext highlighter-rouge">%(authorname:mailmap)</code> and related
+formats. In <code class="language-plaintext highlighter-rouge">copy_email()</code>, for <code class="language-plaintext highlighter-rouge">%(authoremail:mailmap)</code> and related formats and
+their respective options. <br /></p>
+
+<p>We can avoid doing this by directly changing the buffer we pass to
+<code class="language-plaintext highlighter-rouge">find_wholine()</code> by doing something like</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">mailmap</span><span class="p">.</span><span class="n">use</span><span class="p">)</span>
+	<span class="n">change_to_mailmap_value</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>in <code class="language-plaintext highlighter-rouge">grab_person()</code>. <br /></p>
+
+<p>We could also change this in <code class="language-plaintext highlighter-rouge">find_wholine()</code> itself. This is faster because we
+only grab a buffer till the wholines (that is author, committer and tagger
+information) and then apply mailmap to the particular headers. <br /></p>
+
+<p>Parsing the options remains the same, we only change the above mentioned code so
+that we don’t have to individually call <code class="language-plaintext highlighter-rouge">change_to_mailmap_value()</code> in
+value-grabbing functions. This is still in its testing phase and is just an idea
+and I don’t know if it’ll work (I did test it maunally though and it seems to
+have some bugs, usually of memory allocation). I still have to discuss this with
+Christian and Hariom. I thought I’ll do that with the code all written. <br /></p>
+
+<p>This is all the work that I did past week and nothing else. I have pushed none
+of it (not even the work with Christian’s comments) because there seems to be a
+bug with memory allocation in <code class="language-plaintext highlighter-rouge">copy_email()</code>. I guess this is because some
+conditions are not being tests and the variables start accessing or duplicating
+bogus memory. I’ll have to figure it out. <br /></p>
+
+<p>‘til next time, <br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>

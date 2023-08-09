@@ -1,4 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-04T12:02:52+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 10: Code can be cleaner</title><link href="http://localhost:4000/2023/08/02/week10.html" rel="alternate" type="text/html" title="Week 10: Code can be cleaner" /><published>2023-08-02T00:00:00+05:30</published><updated>2023-08-02T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/02/week10</id><content type="html" xml:base="http://localhost:4000/2023/08/02/week10.html">&lt;p&gt;The mailmap options have finally taken form and I have pushed the initial
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-10T00:38:36+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 11: Another possible approach at mailmap options</title><link href="http://localhost:4000/2023/08/09/week11.html" rel="alternate" type="text/html" title="Week 11: Another possible approach at mailmap options" /><published>2023-08-09T00:00:00+05:30</published><updated>2023-08-09T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/09/week11</id><content type="html" xml:base="http://localhost:4000/2023/08/09/week11.html">&lt;p&gt;This week was a bit unproductive as I was sick for a few days and couldn’t
+really get any work done in that time. I was able to add the docs and the tests
+to the changed implementation from Christian’s comments last week though. So now
+the implementation looks a bit like this &lt;br /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;EO_RAW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;EO_TRIM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;EO_LOCALPART&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;EO_MAILMAP&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;option&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We parse the options of the given relevant format with
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;email_atom_option_parser()&lt;/code&gt; and loop through it in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;person_email_atom_parser()&lt;/code&gt;
+to store them in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;struct used_atom&lt;/code&gt; (the looping is done atmost two times, with
+the only option we can comibine &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;trim&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;localpart&lt;/code&gt; is with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mailmap&lt;/code&gt;). &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;We then perform bit operations to get the asked values which are stored in
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;struct used_atom&lt;/code&gt;. This part is done in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_email()&lt;/code&gt; which is then called by
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;grab_person()&lt;/code&gt; to get the values according to the option parsing. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;another-approach&quot;&gt;Another approach&lt;/h4&gt;
+
+&lt;p&gt;In the above way of implementing things, we transform the buffer passed to get
+the email value, according to the options, to conform with .mailmap file or the
+config variable set. However, we do this transforming step precisely thrice.
+Once in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_line()&lt;/code&gt;, whenever we pass something like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(author)&lt;/code&gt; to
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--format=&amp;lt;format&amp;gt;&lt;/code&gt;. In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_name()&lt;/code&gt;, for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(authorname:mailmap)&lt;/code&gt; and related
+formats. In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_email()&lt;/code&gt;, for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(authoremail:mailmap)&lt;/code&gt; and related formats and
+their respective options. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can avoid doing this by directly changing the buffer we pass to
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;find_wholine()&lt;/code&gt; by doing something like&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mailmap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;change_to_mailmap_value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;grab_person()&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;We could also change this in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;find_wholine()&lt;/code&gt; itself. This is faster because we
+only grab a buffer till the wholines (that is author, committer and tagger
+information) and then apply mailmap to the particular headers. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Parsing the options remains the same, we only change the above mentioned code so
+that we don’t have to individually call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;change_to_mailmap_value()&lt;/code&gt; in
+value-grabbing functions. This is still in its testing phase and is just an idea
+and I don’t know if it’ll work (I did test it maunally though and it seems to
+have some bugs, usually of memory allocation). I still have to discuss this with
+Christian and Hariom. I thought I’ll do that with the code all written. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is all the work that I did past week and nothing else. I have pushed none
+of it (not even the work with Christian’s comments) because there seems to be a
+bug with memory allocation in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_email()&lt;/code&gt;. I guess this is because some
+conditions are not being tests and the variables start accessing or duplicating
+bogus memory. I’ll have to figure it out. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This week was a bit unproductive as I was sick for a few days and couldn’t really get any work done in that time. I was able to add the docs and the tests to the changed implementation from Christian’s comments last week though. So now the implementation looks a bit like this</summary></entry><entry><title type="html">Week 10: Code can be cleaner</title><link href="http://localhost:4000/2023/08/02/week10.html" rel="alternate" type="text/html" title="Week 10: Code can be cleaner" /><published>2023-08-02T00:00:00+05:30</published><updated>2023-08-02T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/02/week10</id><content type="html" xml:base="http://localhost:4000/2023/08/02/week10.html">&lt;p&gt;The mailmap options have finally taken form and I have pushed the initial
 version to my fork with the branch name “&lt;a href=&quot;https://github.com/five-sh/git/commits/mailmap0&quot;&gt;mailmap0&lt;/a&gt;”. The approach used is as
 described in my previous post with some additional changes so that we now can
 also grab mailmap values for the name atoms (that is, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%(authorname)&lt;/code&gt;,
@@ -678,92 +737,4 @@ which can be re-implemented in &lt;code class=&quot;language-plaintext highlight
 make the most sense in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. This should be fun.&lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;‘til next time,&lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">Last week, I had sent out the patch series duplicating the signature atom from pretty into ref-filter. Christian, Junio, Eric and Oswald left a few comments. One interesting change has been to the way we check for the version of GPG in the prereq GPG2. How I originally wrote it was</summary></entry><entry><title type="html">Week 1: The First Patches</title><link href="http://localhost:4000/2023/05/31/week1.html" rel="alternate" type="text/html" title="Week 1: The First Patches" /><published>2023-05-31T00:00:00+05:30</published><updated>2023-05-31T00:00:00+05:30</updated><id>http://localhost:4000/2023/05/31/week1</id><content type="html" xml:base="http://localhost:4000/2023/05/31/week1.html">&lt;p&gt;A lot of things happened this week and I don’t really know where to
-begin. So I’ll start with the work I did and touch the other details
-as I go through them. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;As mentioned in the post the post before this, I am continuing the work
-that Nsengiyumva has done before me and am builiding on his work
-regarding the signature format. Git already has a way to output
-signatures and the information related to it in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;, but
-the goal here is to duplicate this format in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; so that
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; can do everything that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; is already doing. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;My progress can be found from branches “&lt;a href=&quot;https://github.com/five-sh/git/commits/sign1&quot;&gt;sign1&lt;/a&gt;” to “&lt;a href=&quot;https://github.com/five-sh/git/commits/sign5&quot;&gt;sign5&lt;/a&gt;”. This
-process of working on this has been very informative as I was tweaking
-through old log messages, particularly of &lt;a href=&quot;https://github.com/git/git&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gpg-interface.{c, h}&lt;/code&gt;&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;The problem with Nsengiyumva’s patches was that they were breaking CI,
-specifically on linux32. So if we figure out a way to make these tests
-pass, we can propose a successful change and hopefully get the patches
-that Nsegiyumva has worked on, merged since it is a step towards reaching
-that single interface for formats. &lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;what-is-breaking-ci&quot;&gt;What is breaking CI?&lt;/h4&gt;
-
-&lt;p&gt;GNU Privacy Guard, that is GPG, is basically a crytographic tool that
-helps make your files secure (this is really vague but see their
-&lt;a href=&quot;https://gnupg.org/&quot;&gt;website&lt;/a&gt;). In Git, you can sign commits or tags with the help of GPG,
-so that when you push it, people can verify and know that your change
-was legitimate and has not been touched. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;In this process, Git (in fact, GPG) allows you see what is going on
-behind the curtain. Since what Nsengiyumva has worked on and what I am
-now working on has to do with how we can customize this output to the way
-we want to see it on stdout (see &lt;a href=&quot;https://git-scm.com/docs/git-log#_pretty_formats&quot;&gt;log&lt;/a&gt;), it is necessary we write tests to make
-sure the output is indeed customized. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;This is exactly where the CI breaks. You see, there is a difference in the
-way GPG outputs on stderr between different major GPG versions. Since
-linux32 (on which the CI jobs also run on) only supports GPG till v1.4.2,
-the test written for the format option where the whole verification
-message is shown fails on linux32 but passes on all other systems for
-which we run the CI jobs because all of these use GPG v2.0.0 or higher. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;I refactored the test to use a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sed&lt;/code&gt; script in hope of getting the test
-to pass but it was in vain. So I started searching the logs.&lt;/p&gt;
-
-&lt;h4 id=&quot;mentors&quot;&gt;Mentors&lt;/h4&gt;
-
-&lt;p&gt;I was going through the log messages looking for something useful which
-would help make this test pass on all systems. I found some commits
-which were related but not really useful in this context. So I texted
-Christian and Hariom saying this was the case. Since we had already
-decided that we will be meeting online every Friday and it was Friday,
-we discussed about this in the meet. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;The meet was a great experience for me. It was the first time I talked
-with my mentors and it was really exciting. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;Christian suggested in the meet that we should introduce a new &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;prereq
-GPG2&lt;/code&gt;, which would exclusively use GPG v2.0.0 or higher and will exit if
-it is any other version. We agreed to go with it.&lt;/p&gt;
-
-&lt;p&gt;It was instantly clear to me the role that mentors played in a project.&lt;/p&gt;
-
-&lt;h4 id=&quot;current-work&quot;&gt;Current Work&lt;/h4&gt;
-
-&lt;p&gt;Along with the new prereq, I also cleaned up the code around the tests. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;While going through the code related to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; formats, I noticed
-there was no test for the raw verification message format &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%GG&lt;/code&gt; but didn’t
-really give it much thought. After Christian looked at the final commits,
-he thought it would be better to add such a test and I couldn’t agree more
-so we added it.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;This version can be found on branch “&lt;a href=&quot;https://github.com/five-sh/git/commits/sign5&quot;&gt;sign5&lt;/a&gt;” for which the CI is successful. This is also the version
-that I sent to the mailing list and these are the first &lt;a href=&quot;https://lore.kernel.org/git/20230529192209.17747-1-five231003@gmail.com/&quot;&gt;patches&lt;/a&gt; that I 
-sent to the mailing list as part of GSoC.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;Also, for anyone trying to set up Mutt, if you have a GMail account or
-really anything that requires a compulsory OAuth2 authentication, believe me,
-you are in for real pain. There is a Red Hat post to help you with this
-process but I didn’t find it &lt;em&gt;that&lt;/em&gt; helpful. You’ll be much better off
-reading the README associated with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mutt_oauth2.py&lt;/code&gt; script instead. This
-is the script which is facilitates the use of OAuth2 in Mutt.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;‘til next time, &lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">A lot of things happened this week and I don’t really know where to begin. So I’ll start with the work I did and touch the other details as I go through them.</summary></entry></feed>
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">Last week, I had sent out the patch series duplicating the signature atom from pretty into ref-filter. Christian, Junio, Eric and Oswald left a few comments. One interesting change has been to the way we check for the version of GPG in the prereq GPG2. How I originally wrote it was</summary></entry></feed>
