@@ -1,4 +1,80 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-10T00:38:36+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 11: Another possible approach at mailmap options</title><link href="http://localhost:4000/2023/08/09/week11.html" rel="alternate" type="text/html" title="Week 11: Another possible approach at mailmap options" /><published>2023-08-09T00:00:00+05:30</published><updated>2023-08-09T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/09/week11</id><content type="html" xml:base="http://localhost:4000/2023/08/09/week11.html">&lt;p&gt;This week was a bit unproductive as I was sick for a few days and couldn’t
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-20T12:05:53+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">Week 12: How ref-filter does things</title><link href="http://localhost:4000/2023/08/16/week12.html" rel="alternate" type="text/html" title="Week 12: How ref-filter does things" /><published>2023-08-16T00:00:00+05:30</published><updated>2023-08-16T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/16/week12</id><content type="html" xml:base="http://localhost:4000/2023/08/16/week12.html">&lt;p&gt;The past week, I have been rerolling the mailmap commit in my fork according to
+comments it recieved. I think it has taken more form now and we can send it to
+the mailing list soon. Although I guess the patch cycle will go well after
+Git-2.42.0 (which is in less than a &lt;a href=&quot;http://tinyurl.com/gitcal&quot;&gt;week&lt;/a&gt; from now, so). The lastest of the
+rerolls in the fork is “&lt;a href=&quot;https://github.com/five-sh/git/commits/mailmap4&quot;&gt;mailmap4&lt;/a&gt;”. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The majority of the work that I did this week was on Hariom’s idea.&lt;/p&gt;
+
+&lt;h4 id=&quot;setting-the-stage&quot;&gt;Setting the stage&lt;/h4&gt;
+
+&lt;p&gt;So, all the way back in the “Week 2” post, I wrote about an idea that Hariom
+came up with regarding a bridge between the ref-filter formats and the pretty
+formats, where we essentially do something like&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;format&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exists&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;grab&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;values&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;the&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pretty&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;way&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;this helps in testing, say &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log&lt;/code&gt; output, which is generated from the logic of
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;my-approach-kind-of&quot;&gt;My approach (kind of)&lt;/h4&gt;
+
+&lt;p&gt;The way &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; does things out of any filtering of refs is that, it first
+gathers the format in&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-each-ref&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;format&amp;gt; refspec
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;and verifies that format, which parses the options if we have a legitimate
+format and then we grab the values according our format.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; also works in a similar way but is more straight-forward, there are
+calls to the core &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;format_commit_one()&lt;/code&gt; which strips off the placeholder string
+till all the placeholders are parsed. The values themselves are also grabbed in
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;format_commit_one()&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Hariom did work on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty-lib.{c, h}&lt;/code&gt;, which prints out the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log&lt;/code&gt; based on the
+values grabbed from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. One of the functions used in the
+implementation is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;convert_format()&lt;/code&gt;, which converts the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; formats to
+their equivalent &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; formats. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The implementation that I’m working on now makes use of this &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;convert_format()&lt;/code&gt;
+function, but instead of returning the length of the placeholder, it returns the
+format string as known to ref-filter. We run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;verify_ref_format()&lt;/code&gt; on such a
+string and grab the values from ref-filter. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;To make this work, we would need to find a way in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; where we could
+grab values for a given format without a ref but with the commit id, which I’m
+currently working on. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once this is done, we run a check whether the whole &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; format string is
+transformable into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; format string. If not, we fall back to doing
+things pretty way and finally print the values for example a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log&lt;/code&gt; output. We
+can do this two ways&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Reject &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; logic if at least one &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; format doesn’t have an
+equivalent in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; for the given format string.&lt;/li&gt;
+  &lt;li&gt;Reject &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; logic for only those &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; placeholders in the format
+string that don’t have an equivalent in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; and grab values
+accordingly, that is, for those that have an equivalent in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; grab
+values through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; logic and for those who don’t, fallback to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;
+way of doing things.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The first way is relatively easier but the second way can be followed given how
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;convert_format()&lt;/code&gt; is written. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I haven’t discussed this with Christian and Hariom yet, wanted to do it once the
+I pushed the commits. Throughout the week, we discussed the mailmap support to
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">The past week, I have been rerolling the mailmap commit in my fork according to comments it recieved. I think it has taken more form now and we can send it to the mailing list soon. Although I guess the patch cycle will go well after Git-2.42.0 (which is in less than a week from now, so). The lastest of the rerolls in the fork is “mailmap4”.</summary></entry><entry><title type="html">Week 11: Another possible approach at mailmap options</title><link href="http://localhost:4000/2023/08/09/week11.html" rel="alternate" type="text/html" title="Week 11: Another possible approach at mailmap options" /><published>2023-08-09T00:00:00+05:30</published><updated>2023-08-09T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/09/week11</id><content type="html" xml:base="http://localhost:4000/2023/08/09/week11.html">&lt;p&gt;This week was a bit unproductive as I was sick for a few days and couldn’t
 really get any work done in that time. I was able to add the docs and the tests
 to the changed implementation from Christian’s comments last week though. So now
 the implementation looks a bit like this &lt;br /&gt;&lt;/p&gt;
@@ -670,71 +746,4 @@ commit.&lt;br /&gt;&lt;/p&gt;
 shows annotated tags but we can also describe lightweight tags using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--tags&lt;/code&gt;.&lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;‘til next time,&lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This was a tough week and borderline unproductive. I spent the majority of the first half of the week reading logs, trying to get a good approach on Hariom’s idea. The whole weekend was just me sitting and thinking about a way to implement the idea in a maintainable and efficient manner.</summary></entry><entry><title type="html">Week 2: Reading</title><link href="http://localhost:4000/2023/06/07/week2.html" rel="alternate" type="text/html" title="Week 2: Reading" /><published>2023-06-07T00:00:00+05:30</published><updated>2023-06-07T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/07/week2</id><content type="html" xml:base="http://localhost:4000/2023/06/07/week2.html">&lt;p&gt;Last week, I had sent out the patch series duplicating the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt;
-atom from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. Christian, Junio, Eric and Oswald
-left a few comments. One interesting change has been to the way we check
-for the version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GPG&lt;/code&gt; in the prereq &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GPG2&lt;/code&gt;. How I originally wrote
-it was&lt;br /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;gpg_version&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) 2.&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-	say &lt;span class=&quot;s2&quot;&gt;&quot;This test requires a GPG version &amp;gt;= v2.0.0&quot;&lt;/span&gt;
-	&lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
-	&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;br /&gt;
-Now this seems absurd because if we ever see a GPG v3 or v4 or so on, this
-won’t work. This can be overcome with&lt;br /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) 0.&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; | &lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) 1.&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;br /&gt;
-which Christian suggested and Eric suggested an improved version&lt;br /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gpg (GnuPG) &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;01].&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;br /&gt;
-which makes use of glob patterns and was something that I did not even
-think of.&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;There have also been style changes pointed out by Oswald, which led me
-to think a bit more and I came up with the changes where we replace the
-use of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if-else&lt;/code&gt; with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;switch&lt;/code&gt; when checking for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt; options.
-This has the advantage of being more readable when compared to the
-previous construct.&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;All of these changes have been sent out and can be seen on v3. As of the
-“What’s cooking in git.git” email sent out by Junio yesterday, these
-commits are on “seen”.&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;whats-cooking-in-my-fork&quot;&gt;What’s cooking in my fork?&lt;/h4&gt;
-
-&lt;p&gt;Apart from replying and amending the patch series according to the
-reviews, I have been reading through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt;.
-Hariom came up with the idea of experimenting with a bridge between
-both the formats. Something like&lt;br /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;if atom exists for pretty arg:
-	use ref-filter format
-else
-	use pretty format
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;br /&gt;
-which is great for testing ref-filter formats. So I began tweaking some
-code and making changes. Nothing has been pushed yet though. I have also
-been reading through log and making sense of things. Parts of code has
-changed since Hariom and others worked on the project (which is obvious)
-and it has become even more simpler to write good and efficient code and
-to build on top of their code. It becomes even more apparent, day after
-day, the power that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git log&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git blame&lt;/code&gt; hold.&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;Apart from this, I’m thinking about working on other &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; formats
-which can be re-implemented in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. Specifically those which
-make the most sense in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;. This should be fun.&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;‘til next time,&lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">Last week, I had sent out the patch series duplicating the signature atom from pretty into ref-filter. Christian, Junio, Eric and Oswald left a few comments. One interesting change has been to the way we check for the version of GPG in the prereq GPG2. How I originally wrote it was</summary></entry></feed>
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This was a tough week and borderline unproductive. I spent the majority of the first half of the week reading logs, trying to get a good approach on Hariom’s idea. The whole weekend was just me sitting and thinking about a way to implement the idea in a maintainable and efficient manner.</summary></entry></feed>
