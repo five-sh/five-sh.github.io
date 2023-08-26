@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>five-sh's website | The Final Report</title>
+  <meta name="title" content="five-sh's website | The Final Report"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="five-sh's website | The Final Report"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2023/08/26/the-final-report"/>
+  <meta property="og:title" content="five-sh's website | The Final Report"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2023/08/26/the-final-report"/>
+  <meta property="twitter:title" content="five-sh's website | The Final Report"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2023/08/26/the-final-report"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="five-sh's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              The Final Report
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">August 26, 2023
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>Hi, <br />
+GSoC’23 is almost over and it is time for me to bring everything that I did in
+the past 12 Weeks to a single place, including my work and the things that I
+learnt and the relationship I have built with my mentors and the Git Community.</p>
+
+<h3 id="pre-gsoc">Pre GSoC</h3>
+
+<p>My interest was piqued in Git back when I learnt what open source really was,
+about a year ago. Since then I have been reading its code to get a feel of
+it as it was something very different to the programming that I had been in
+College or till that point of time. <br /></p>
+
+<p>I still remember how I was lurking in the background of the mailing list every
+day, seeing how things were done and was reading the code of Git’s initial
+commit, alongside, to see how they were translated into today’s commands. <br /></p>
+
+<p>These are the patches that I submitted to the mailing list before GSoC:</p>
+<ul>
+  <li><a href="https://lore.kernel.org/git/20221110160556.29557-1-five231003@gmail.com/"><code class="language-plaintext highlighter-rouge">[PATCH] repository-version.txt: partialClone casing change</code></a></li>
+  <li><a href="https://lore.kernel.org/git/20221116163956.1039137-1-five231003@gmail.com/"><code class="language-plaintext highlighter-rouge">[RFC][PATCH] object.c: use has_object() instead of repo_has_object_file()</code></a></li>
+  <li><a href="https://lore.kernel.org/git/20230202165137.118741-1-five231003@gmail.com/"><code class="language-plaintext highlighter-rouge">[PATCH] merge: use reverse_commit_list() for list reversal</code></a></li>
+  <li><a href="https://lore.kernel.org/git/20230207150359.177641-1-five231003@gmail.com/"><code class="language-plaintext highlighter-rouge">[PATCH] commit: warn the usage of reverse_commit_list() helper</code></a></li>
+  <li><a href="https://lore.kernel.org/git/20230317175601.4250-1-five231003@gmail.com/"><code class="language-plaintext highlighter-rouge">[PATCH v4] index-pack: remove fetch_if_missing=0</code></a></li>
+</ul>
+
+<p>A more detailed description about them can be read in my <a href="https://docs.google.com/document/d/1JBznA5n0WdWsbEskCeXxOnQuaa0urD89VtprxstLPzo/edit?usp=sharing">GSoC Proposal</a>.</p>
+
+<h3 id="project">Project</h3>
+
+<p><strong>Title:</strong> Unify <code class="language-plaintext highlighter-rouge">ref-filter</code> formats with other <code class="language-plaintext highlighter-rouge">--pretty</code> formats <br />
+<strong>Mentors:</strong> Christian Couder, Hariom Verma <br />
+<strong>Aim:</strong> <br />
+To unify both the <code class="language-plaintext highlighter-rouge">ref-filter</code> and <code class="language-plaintext highlighter-rouge">pretty</code> interfaces such that only a single
+interface is used to handle the formatting of git’s subcommands. <br /></p>
+
+<p>As this is a continuation of the work done by other contributors, GSoC students
+and Outreachy interns, my main goal in this project is to follow their path and
+re-implement the remaining <code class="language-plaintext highlighter-rouge">pretty</code> placeholders into <code class="language-plaintext highlighter-rouge">ref-filter</code> formats.</p>
+
+<h3 id="work">Work</h3>
+
+<p>Many of the <code class="language-plaintext highlighter-rouge">pretty</code> placeholders have already been implemented in <code class="language-plaintext highlighter-rouge">ref-filter</code>.
+The ones that were remaining were the <code class="language-plaintext highlighter-rouge">signature</code> related formats, the
+<code class="language-plaintext highlighter-rouge">describe</code> formats, the <code class="language-plaintext highlighter-rouge">mailmap</code> options and the <code class="language-plaintext highlighter-rouge">reflog</code> options. <br /></p>
+
+<p>A more detailed mapping can be seen in this <a href="https://docs.google.com/spreadsheets/d/1XKNbp1azKi2IFHzdkQSGS-dgnb98XM128lTXuszHTTA/edit?usp=sharing">transition table</a>. <br /></p>
+
+<h4 id="the-signature-atom">The signature atom</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">signature</code> format and its friends give the commit and tag signature
+information</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>signature			- GPG signautre
+signature:grade			- validity of the signature <span class="o">(</span>good, bad, etc<span class="o">)</span>
+signature:signer		- signer of the GPG signature
+signature:key			- key of the GPG signature
+signature:fingerprint		- fingerprint fo the GPG signature
+signature:primarykeyfingerprint - primary key fingerprint of the GPG signature
+signature:trustlevel		- trust Level of the GPG Signature
+</code></pre></div></div>
+
+<p>The duplication of <code class="language-plaintext highlighter-rouge">signature</code> was something that was already worked on before
+me. Almost all the work was done but one test was breaking CI, so I worked on
+that and did some refactoring and sent the patches to the mailing list, which
+have now been merged to master.</p>
+
+<h4 id="the-describe-atom">The describe atom</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">describe</code> atom and friends give the human readable form of a committish
+by internally running <code class="language-plaintext highlighter-rouge">git-describe</code>.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>describe			- the raw output from git-describe on the given ref
+describe:tags<span class="o">=</span>&lt;bool-value&gt;	- along with annotated tags, consider light-weight tags as well <span class="k">if </span><span class="nb">set
+</span>describe:abbrev<span class="o">=</span>&lt;number&gt;	- use at least &lt;number&gt; digits to generate the human readable format
+describe:match<span class="o">=</span>&lt;pattern&gt;	- consider tags only that match the glob pattern
+describe:exclude<span class="o">=</span>&lt;pattern&gt;	- exclude all tags that match the glob pattern
+</code></pre></div></div>
+
+<p>These options can also be used together, where ever appropriate. <br /></p>
+
+<p>The commits for this are also in master now. <br /></p>
+
+<h4 id="the-mailmap-options">The mailmap options</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">mailmap</code> options are the usual name and email formats but respecting the
+mailmap file at the top of a repository or according to relevant configuration
+variable set.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>authorname:mailmap			- author name respecting mailmap
+committername:mailmap			- committer name respecting mailmap
+taggername:mailmap			- tagger name respecting mailmap
+
+authoremail:mailmap			- author email respecting mailmap
+authoremail:mailmap,trim		- author email without the angle brackets, respecting mailmap
+authoremail:mailmap,localpart		- author email with only what occurs before <span class="s1">'@'</span>, respecting mailmap
+committeremail:mailmap			- committer email respecting mailmap
+committeremail:mailmap,trim		- committer email without the angle brackets, respecting mailmap
+committeremail:mailmap,localpart	- committer email with only what occurs before <span class="s1">'@'</span>, respecting mailmap
+taggeremail:mailmap			- tagger email respecting mailmap
+taggeremail:mailmap,trim		- tagger email without the angle brackets, respecting mailmap
+taggeremail:mailmap,localpart		- tagger email with only what occurs before <span class="s1">'@'</span>, respecting mailmap
+</code></pre></div></div>
+
+<p>These formats are currently cooking in my fork and can be read on the branch
+“<a href="https://github.com/five-sh/git/commits/mailmap7">mailmap7</a>” which has the latest version of the commits associated with the
+implementation of these formats. <br /></p>
+
+<h4 id="misc">Misc</h4>
+
+<p>Apart from these, I also worked on using <code class="language-plaintext highlighter-rouge">ref-filter</code> logic wherever possible
+in <code class="language-plaintext highlighter-rouge">pretty</code>. The way this is done is that if a mapping exists between
+<code class="language-plaintext highlighter-rouge">ref-filter</code> formats and <code class="language-plaintext highlighter-rouge">pretty</code> formats, we use <code class="language-plaintext highlighter-rouge">ref-filter</code> logic. Otherwise,
+we use the usual <code class="language-plaintext highlighter-rouge">pretty</code> logic. This is still cooking in my branch and is not
+generally meant to be sent to the mailing list but can be used to check the
+compatibility of any newly added formats. <br /></p>
+
+<p>I also worked on a small patch which was a test fix in regards to how
+<code class="language-plaintext highlighter-rouge">describe:abbrev=&lt;number&gt;</code> <code class="language-plaintext highlighter-rouge">pretty</code> format’s test did not test all the possible
+cases. This patch has been merged to master. <br /></p>
+
+<p>I also made an attempt to review a patch that was sent to change a test that was
+written as part of the original <code class="language-plaintext highlighter-rouge">signature</code> commits. While the review didn’t go
+as expected from my side (I misunderstood some meaning of the the patch), the
+final patches looked very clean. This is the <a href="https://lore.kernel.org/git/20230821222448.1524a5fc@leda.eworm.net/T/">mailing list thread</a>. <br /></p>
+
+<p>I have also maintained a <a href="https://five-sh.github.io/blog">blog</a> during this period and have posted weekly about
+the work I did in the week and also some other things. I hope to continue this
+blog and post here whenever I find something to write about in Git that
+fasicnated me or just anything tech-related in general.</p>
+
+<h3 id="patches">Patches</h3>
+
+<h4 id="the-signature-atom-1">The signature atom</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Graduated to 'master']
+
+* ks/ref-filter-signature (2023-06-06) 2 commits
+  (merged to 'next' on 2023-07-06 at 1748d2bb93)
+ + ref-filter: add new "signature" atom
+ + t/lib-gpg: introduce new prereq GPG2
+</code></pre></div></div>
+
+<p><strong>Status</strong>: Merged to master <br />
+<strong>Mailing List</strong>: <a href="https://lore.kernel.org/git/20230602023105.17979-3-five231003@gmail.com/T/">Thread</a> <br />
+<strong>Merge Commit</strong>: <a href="https://github.com/git/git/commit/81ebc54e81619ccc71fca6a4ce7822e78b24e80c"><code class="language-plaintext highlighter-rouge">ks/ref-filter-signature</code></a></p>
+
+<h4 id="the-describe-atom-1">The describe atom</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Graduated to 'master']
+
+* ks/ref-filter-describe (2023-07-24) 2 commits
+  (merged to 'next' on 2023-07-26 at f4b3b3b7ef)
+ + ref-filter: add new "describe" atom
+ + ref-filter: add multiple-option parsing functions
+</code></pre></div></div>
+
+<p><strong>Status</strong>: Merged to master <br />
+<strong>Mailing List</strong>: <a href="https://lore.kernel.org/git/20230725205924.40585-3-five231003@gmail.com/T/">Thread</a> <br />
+<strong>Merge Commit</strong>: <a href="https://github.com/git/git/commit/70e5c5ddddadc7f15f64f812ae511eab83ca0040"><code class="language-plaintext highlighter-rouge">ks/ref-filter-describe</code></a></p>
+
+<h4 id="the-mailmap-options-1">The mailmap options</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ref-filter: add mailmap support
+</code></pre></div></div>
+
+<p><strong>Status</strong>: Cooking in fork and passing tests <br />
+<strong>Fork</strong>: <a href="https://github.com/five-sh/git/commits/mailmap7">mailmap7</a></p>
+
+<h4 id="use-ref-filter-logic-in-pretty">Use ref-filter logic in pretty</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pretty: use ref-filter logic wherever possible
+pretty: introduce ref_format_commit()
+ref-filter: introduce get_value_from_oid()
+</code></pre></div></div>
+
+<p><strong>Status</strong>: Cooking in fork and failing tests <br />
+<strong>Reasons for failing tests</strong>: <br /></p>
+<ul>
+  <li>Around 10% of t4205, 30% of t4212 and 15% of t6006 seem to be failing tests.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">--date</code> option of <code class="language-plaintext highlighter-rouge">log</code> is not given higher priority when compared to the
+format string and this seems to be the main reason why the tests are failing.</li>
+  <li>Some other tests are failing because of utf-8 formatting.</li>
+  <li>The tests failures can be read in the <a href="https://github.com/five-sh/git/actions/runs/5964643036">logs of ci</a> for this branch.</li>
+</ul>
+
+<p><strong>Fork</strong>: <a href="https://github.com/five-sh/git/commits/use-ref-filter-in-pretty0">use-ref-filter-in-pretty0</a></p>
+
+<h4 id="test-fix-describe-with-abbrev">Test fix, describe with abbrev</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Graduated to 'master']
+
+* ks/t4205-test-describe-with-abbrev-fix (2023-06-29) 1 commit
+  (merged to 'next' on 2023-06-29 at 5fc309dc75)
+ + t4205: correctly test %(describe:abbrev=...)
+</code></pre></div></div>
+
+<p><strong>Status</strong>: Merged to master <br />
+<strong>Mailing List</strong>: <a href="https://lore.kernel.org/git/20230629133841.18784-2-five231003@gmail.com/T/">Thread</a> <br />
+<strong>Merge Commit</strong>: <a href="https://github.com/git/git/commit/d52a45cf5635f9f40a99ddc6efa92713f2d357b4"><code class="language-plaintext highlighter-rouge">ks/t4205-test-describe-with-abbrev-fix</code></a></p>
+
+<h3 id="future-work">Future Work</h3>
+
+<h4 id="the-reflog-formats">The reflog formats</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">reflog</code> formats do not yet have an implementation in <code class="language-plaintext highlighter-rouge">ref-filter</code> and
+an immediate thing to work on would be that. Of course, I’d like to come back to
+it after sending the implementation of <code class="language-plaintext highlighter-rouge">mailmap</code> options to the mailing list and
+making the work “use-ref-filter-in-pretty0” branch a bit more stable as it is
+still failing tests. <br /></p>
+
+<h4 id="refactor-multiple-option-parsing-functions">Refactor multiple option parsing functions</h4>
+
+<p>Another thing that one can work on is refactoring the multiple option parsing
+functions that were introduced as part of the <code class="language-plaintext highlighter-rouge">describe</code> formats patches. <br /></p>
+
+<p>There is a possibility that one could change the already existing functions in
+<code class="language-plaintext highlighter-rouge">pretty</code> for multiple option parsing, which are <code class="language-plaintext highlighter-rouge">match_placeholder_arg_value()</code>
+and <code class="language-plaintext highlighter-rouge">match_placeholder_bool_arg()</code>, so that they can directly be used in
+<code class="language-plaintext highlighter-rouge">ref-filter</code> instead of <code class="language-plaintext highlighter-rouge">match_atom_arg_value()</code> and <code class="language-plaintext highlighter-rouge">match_atom_bool_arg().</code></p>
+
+<h3 id="closing-remarks">Closing Remarks</h3>
+
+<p>This has been such a ride. I’m lucky to have such wonderful mentors,
+Christian and Hariom, accept my proposal. They have guided me throughout this
+project and have taught me so many things. They gave insightful reviews which
+helped me improve my code quality and we often met through online meetings via
+Google Meet, where they answered any questions that I had. I can’t thank them
+enough. <br /></p>
+
+<p>I also want to thank the Git Community, which has been very supportive before
+and during GSoC. From tolerating my sloppy patches to giving me very nice
+explanations. Thanks Junio, Taylor, Peff, Elijah, Ævar, Jonathan, Oswald, Eric,
+Glen and Calvin. <br /></p>
+
+<p>I hope to continue in this community and keep learning things from them. <br /></p>
+
+<p>‘til next time, <br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2023
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>
