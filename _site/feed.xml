@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-29T15:19:15+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">GSoC’23 it’s a wrap</title><link href="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html" rel="alternate" type="text/html" title="GSoC’23 it’s a wrap" /><published>2023-08-26T00:00:00+05:30</published><updated>2023-08-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap</id><content type="html" xml:base="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html">&lt;p&gt;It’s the last week of GSoC’23. What a beautiful ride it has been. I have learnt
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-12-31T12:38:17+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">GSoC’23 it’s a wrap</title><link href="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html" rel="alternate" type="text/html" title="GSoC’23 it’s a wrap" /><published>2023-08-26T00:00:00+05:30</published><updated>2023-08-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap</id><content type="html" xml:base="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html">&lt;p&gt;It’s the last week of GSoC’23. What a beautiful ride it has been. I have learnt
 so much in these past 12 weeks. &lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;In this last week, I wanted to wrap up my work on using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; logic in
@@ -126,13 +126,13 @@ taggername:mailmap			- tagger name respecting mailmap
 
 authoremail:mailmap			- author email respecting mailmap
 authoremail:mailmap,trim		- author email without the angle brackets, respecting mailmap
-authoremail:mailmap,localpart		- author email with only what occurs before &lt;span class=&quot;s1&quot;&gt;'@'&lt;/span&gt;, respecting mailmap
+authoremail:mailmap,localpart		- author email with only what occurs before &lt;span class=&quot;s1&quot;&gt;&apos;@&apos;&lt;/span&gt;, respecting mailmap
 committeremail:mailmap			- committer email respecting mailmap
 committeremail:mailmap,trim		- committer email without the angle brackets, respecting mailmap
-committeremail:mailmap,localpart	- committer email with only what occurs before &lt;span class=&quot;s1&quot;&gt;'@'&lt;/span&gt;, respecting mailmap
+committeremail:mailmap,localpart	- committer email with only what occurs before &lt;span class=&quot;s1&quot;&gt;&apos;@&apos;&lt;/span&gt;, respecting mailmap
 taggeremail:mailmap			- tagger email respecting mailmap
 taggeremail:mailmap,trim		- tagger email without the angle brackets, respecting mailmap
-taggeremail:mailmap,localpart		- tagger email with only what occurs before &lt;span class=&quot;s1&quot;&gt;'@'&lt;/span&gt;, respecting mailmap
+taggeremail:mailmap,localpart		- tagger email with only what occurs before &lt;span class=&quot;s1&quot;&gt;&apos;@&apos;&lt;/span&gt;, respecting mailmap
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;These formats are currently cooking in my fork and can be read on the branch
@@ -166,10 +166,10 @@ fasicnated me or just anything tech-related in general.&lt;/p&gt;
 
 &lt;h4 id=&quot;the-signature-atom-1&quot;&gt;The signature atom&lt;/h4&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Graduated to 'master']
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Graduated to &apos;master&apos;]
 
 * ks/ref-filter-signature (2023-06-06) 2 commits
-  (merged to 'next' on 2023-07-06 at 1748d2bb93)
+  (merged to &apos;next&apos; on 2023-07-06 at 1748d2bb93)
  + ref-filter: add new &quot;signature&quot; atom
  + t/lib-gpg: introduce new prereq GPG2
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -180,10 +180,10 @@ fasicnated me or just anything tech-related in general.&lt;/p&gt;
 
 &lt;h4 id=&quot;the-describe-atom-1&quot;&gt;The describe atom&lt;/h4&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Graduated to 'master']
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Graduated to &apos;master&apos;]
 
 * ks/ref-filter-describe (2023-07-24) 2 commits
-  (merged to 'next' on 2023-07-26 at f4b3b3b7ef)
+  (merged to &apos;next&apos; on 2023-07-26 at f4b3b3b7ef)
  + ref-filter: add new &quot;describe&quot; atom
  + ref-filter: add multiple-option parsing functions
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -221,10 +221,10 @@ format string and this seems to be the main reason why the tests are failing.&lt
 
 &lt;h4 id=&quot;test-fix-describe-with-abbrev&quot;&gt;Test fix, describe with abbrev&lt;/h4&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Graduated to 'master']
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[Graduated to &apos;master&apos;]
 
 * ks/t4205-test-describe-with-abbrev-fix (2023-06-29) 1 commit
-  (merged to 'next' on 2023-06-29 at 5fc309dc75)
+  (merged to &apos;next&apos; on 2023-06-29 at 5fc309dc75)
  + t4205: correctly test %(describe:abbrev=...)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
