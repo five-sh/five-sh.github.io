@@ -1,4 +1,94 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-08-18T22:11:07+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">five-sh’s website</title><subtitle></subtitle><entry><title type="html">GSoC’23 it’s a wrap</title><link href="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html" rel="alternate" type="text/html" title="GSoC’23 it’s a wrap" /><published>2023-08-26T00:00:00+05:30</published><updated>2023-08-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap</id><content type="html" xml:base="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html">&lt;p&gt;It’s the last week of GSoC’23. What a beautiful ride it has been. I have learnt
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-08-18T22:32:53+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">Kousik’s website</title><subtitle></subtitle><entry><title type="html">LKMP - Wrapping up</title><link href="http://localhost:4000/2024/06/03/LKMP-wrapping-up.html" rel="alternate" type="text/html" title="LKMP - Wrapping up" /><published>2024-06-03T00:00:00+05:30</published><updated>2024-06-03T00:00:00+05:30</updated><id>http://localhost:4000/2024/06/03/LKMP-wrapping-up</id><content type="html" xml:base="http://localhost:4000/2024/06/03/LKMP-wrapping-up.html">&lt;p&gt;The past 12 weeks have have been such a joyful ride into the linux
+kernel.  I started my mentorship program on March 1, 2024 - which was
+the spring.  I’ve learnt so much about things in the kernel and had
+really great office hours where I got to sit in meets with wonderful
+people and make great connections.  This post is about my journey in
+these three months. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;weeks-1---4&quot;&gt;Weeks 1 - 4&lt;/h3&gt;
+&lt;p&gt;My initial goal going into the program was to write a device driver - but
+I understood very soon that I was pretty naive because I hadn’t know at
+the time what devicetree had and its significance within the kernel and
+the power it gives.  I also didn’t know how to test patches and how one
+had to set up the right environment to test code and rightly compile for
+the given architecture. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;My initial spell fix and docs fix patches were in this stage where I
+decided that I had to learn these things and hence began reading driver
+code for a couple of hardware modules that I knew about. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;After this, I read about dtschema and learnt how to convert txt bindings
+to yaml ones so that they allowed validation against DTS files. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Towards the end of this period, Shuah introduced my fellow mentees and me
+to Julia Lawall and the device_node auto cleanup project where it was
+desired to remove calls to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;of_node_put()&lt;/code&gt; and invoke it implicitly at the
+end of scope of the corresponding pointer with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;__free(device_node)&lt;/code&gt; written
+at the initialization. &lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;weeks-4---8&quot;&gt;Weeks 4 - 8&lt;/h3&gt;
+&lt;p&gt;In this period, I mostly worked on dtschema patches and occasionally on
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;of_node_put()&lt;/code&gt; patches.  I learnt a lot about dtschema and how it
+validates the devicetree code.  I also went through the driver code to
+look at the various &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;of_*()&lt;/code&gt; calls that were made to look at all the
+properties that were used and their type to add or remove any properties
+that were present in the txt binding and made no sense (and even sometimes
+errored or warned by the binding check, once it was converted to yaml).
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;This also helped me in my of_node_put() work as it I got to understand
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;device_node&lt;/code&gt; better and how it was used in various places in the code so
+that I didn’t unnecessarily do any &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;__free()&lt;/code&gt; to auto clean it up anywhere.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I also had a great time in the LKMP’24 discord server where there was
+continuous discussion on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;of_node_put()&lt;/code&gt; work as it was something new
+in the kernel and everyone including me was excited.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;weeks-8---12&quot;&gt;Weeks 8 - 12&lt;/h3&gt;
+&lt;p&gt;During these final few weeks I wanted to solely concentrate on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;of_node_put()&lt;/code&gt;
+work as my dtschema patches were now merged into the spi tree (the subsystem
+which I largely focused on).  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I wrote three patches to do auto-cleanup in soc/ti/ that went through
+critical review from Julia off-list and I’m really thankful for it as it
+shaped the patches to take a more perfect form.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;After I sent it to the list, the kernel test bot complained that it couldn’t
+compile it, which led to an interesting discussion and Julia and I worked on
+a report (which is stilla a draft) to describe the issue and give a possible
+solution, since this hadn’t really happened in the kernel and was something
+new.  The draft report can be read &lt;a href=&quot;https://docs.google.com/document/d/16_hTLTgEIwAURGw3PS4gOJxnKxComMQsPg_0XcuKlzo/edit?usp=sharing&quot;&gt;here&lt;/a&gt;.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Jonathan suggested a really clear and nice solution that I prepared as a
+v2 and which is currently under review off-list.  I also concurrently
+started working on a driver for a module that I had used a couple of
+semesters ago but which had no support in linux.  So currently I’m
+learning more stuff to write a good driver and hopefully get it merged
+into the mainline kernel. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The past 12 weeks have been so much fun.  Being an Electronics and
+Communication Engineering student, I’ve learnt so much about devicetrees
+and drivers.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I have also attended the first ever kernel meetup that happened in
+Hyderabad, India (from where I’m from).  It was fun to meet people who
+were already working in the field and getting to know about how things
+happened and what was currently happening.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I would like to thank Max Brown, Rob Herring, Krzysztof Kozlowski and
+Jonathan Cameron and also other maintainers and reviewers who have been
+very patient with my patches.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;I would especially like to thank Julia Lawall for carefully reviewing
+my patches and helping me on the report.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Of course, I can’t thank Shuah Khan and Javier Carrasco enough for their
+support throughout the program.  I have really enjoyed the office hours
+every week and have learnt so much in this program.  &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;‘til next time, &lt;br /&gt;
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">The past 12 weeks have have been such a joyful ride into the linux kernel. I started my mentorship program on March 1, 2024 - which was the spring. I’ve learnt so much about things in the kernel and had really great office hours where I got to sit in meets with wonderful people and make great connections. This post is about my journey in these three months.</summary></entry><entry><title type="html">GSoC’23 it’s a wrap</title><link href="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html" rel="alternate" type="text/html" title="GSoC’23 it’s a wrap" /><published>2023-08-26T00:00:00+05:30</published><updated>2023-08-26T00:00:00+05:30</updated><id>http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap</id><content type="html" xml:base="http://localhost:4000/2023/08/26/GSoC-it-is-a-wrap.html">&lt;p&gt;It’s the last week of GSoC’23. What a beautiful ride it has been. I have learnt
 so much in these past 12 weeks. &lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;In this last week, I wanted to wrap up my work on using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; logic in
@@ -814,53 +904,4 @@ was looking good. &lt;br /&gt;&lt;/p&gt;
 duplication of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; too. &lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;‘til next time, &lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This week has almost only been cleaning up the describe atom code and making it ready to be a proper patch series that can be sent out to the mailing list. So no new work has been put into either .mailmap or Hariom’s idea, which is kind of sad because I have been postponing it for a while now, especially Hariom’s idea but things should settle in this week.</summary></entry><entry><title type="html">Week 5: Getting familiar with .mailmap</title><link href="http://localhost:4000/2023/06/28/week5.html" rel="alternate" type="text/html" title="Week 5: Getting familiar with .mailmap" /><published>2023-06-28T00:00:00+05:30</published><updated>2023-06-28T00:00:00+05:30</updated><id>http://localhost:4000/2023/06/28/week5</id><content type="html" xml:base="http://localhost:4000/2023/06/28/week5.html">&lt;p&gt;As already mentioned in my last week’s post, I’ve been working on the
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;describe&lt;/code&gt; atom. This week, I worked on improving it and fixing parts
-of the tests based on the comments that Christian made on the first
-version. The changes can be read on the branch &lt;a href=&quot;https://github.com/five-sh/git/commits/describe2&quot;&gt;“describe2”&lt;/a&gt;. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;The tests still don’t seem to pass. After spending considerable
-amount of time redoing them and trying to understand what was actually
-going on, I asked Christian. He took a look at my branch and gave a
-really nice explanation as to what was really going on and how we can
-possibly fix it. So I think we can fix it now. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;I also received comments on “t4205-describe-fix” and changed it (just
-some minor improvements on the way we do things). The changes can be
-read on the branch &lt;a href=&quot;https://github.com/five-sh/git/commits/t4205-describe-fix3&quot;&gt;“t4205-describe-fix3”&lt;/a&gt;. I have also sent this patch
-to the &lt;a href=&quot;https://lore.kernel.org/git/20230628181753.10384-1-five231003@gmail.com/&quot;&gt;mailing list&lt;/a&gt;.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;the-mailmap-options&quot;&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options&lt;/h4&gt;
-
-&lt;p&gt;A &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; file is a file which has the author and their respective
-email information. Git basically looks for this file in the top-level
-of the repo by default or if the config variables for the path are set,
-then it uses that file. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;This file is very useful when the repo consists of various authors and
-committers and if any of them have more than one way in which their name
-is set or if they have multiple emails. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options are used in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pretty&lt;/code&gt; when displaying author names,
-author emails, committer names, commiter emails and for reflog identity
-name and email. Since &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; doesn’t yet have the reflog options,
-the inital attempt would be so that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt; can use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; for
-author names and emails and committer names and emails. &lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;To make use of these options in through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref-filter&lt;/code&gt;, Christian suggested
-to read through the patches that Siddharth Asthana sent regarding the
-integration of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.mailmap&lt;/code&gt; options in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git cat-file&lt;/code&gt;. His work on it can be
-read &lt;a href=&quot;https://lore.kernel.org/git/20220630142444.651948-1-siddharthasthana31@gmail.com/&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;https://lore.kernel.org/git/20220916205946.178925-1-siddharthasthana31@gmail.com/&quot;&gt;here&lt;/a&gt;.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;I’ve spent this week reading through his work on this and thinking about
-the possible approach that can be taken.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;Hariom’s idea is still cooking in my local branch, nothing interesting to
-show yet but this will not be the case next week.
-&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;‘til next time, &lt;br /&gt;
-Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">As already mentioned in my last week’s post, I’ve been working on the describe atom. This week, I worked on improving it and fixing parts of the tests based on the comments that Christian made on the first version. The changes can be read on the branch “describe2”.</summary></entry></feed>
+Kousik&lt;/p&gt;</content><author><name></name></author><summary type="html">This week has almost only been cleaning up the describe atom code and making it ready to be a proper patch series that can be sent out to the mailing list. So no new work has been put into either .mailmap or Hariom’s idea, which is kind of sad because I have been postponing it for a while now, especially Hariom’s idea but things should settle in this week.</summary></entry></feed>

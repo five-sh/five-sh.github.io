@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+  
+
+  
+    
+  
+    
+  
+
+  <!-- Primary Meta Tags -->
+  <title>Kousik's website | LKMP - Wrapping up</title>
+  <meta name="title" content="Kousik's website | LKMP - Wrapping up"/>
+  <meta name="description" content=""/>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:site_name" content="Kousik's website | LKMP - Wrapping up"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:url" content="http://localhost:4000/2024/06/03/LKMP-wrapping-up"/>
+  <meta property="og:title" content="Kousik's website | LKMP - Wrapping up"/>
+  <meta property="og:description" content=""/>
+  <meta property="og:image" content="http://localhost:4000"/>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image"/>
+  <meta property="twitter:url" content="http://localhost:4000/2024/06/03/LKMP-wrapping-up"/>
+  <meta property="twitter:title" content="Kousik's website | LKMP - Wrapping up"/>
+  <meta property="twitter:description" content=""/>
+  <meta property="twitter:image" content="http://localhost:4000"/>
+  
+
+  <link rel="stylesheet" href="http://localhost:4000/assets/css/main.css"/>
+  <link rel="canonical" href="http://localhost:4000/2024/06/03/LKMP-wrapping-up"/>
+  <link rel="shortcut icon" href="http://localhost:4000/favicon.ico" type="image/x-icon"/>
+
+  <!-- Google Analytics -->
+  <script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', "", "auto");
+    ga('send', "pageview");
+  </script>
+  <script async src="https://www.google-analytics.com/analytics.js"></script>
+
+
+</head>
+
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="http://localhost:4000/">
+      <img src="http://localhost:4000/assets/img/title.png" alt="Kousik's website" />
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon"></a>
+
+      <div class="menu">
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/">
+            Home
+          </a>
+        
+          
+          
+          <a class="page-link" href="http://localhost:4000/blog">
+            Blog
+          </a>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+          <header class="post-header">
+
+            
+
+            <h1 class="post-title">
+            
+              LKMP - Wrapping up
+            
+            </h1>
+
+            
+            <p class="post-meta"><span class="post-date">June 3, 2024
+            </span></p>
+          </header>
+
+          <article class="post-content">
+            <p>The past 12 weeks have have been such a joyful ride into the linux
+kernel.  I started my mentorship program on March 1, 2024 - which was
+the spring.  I’ve learnt so much about things in the kernel and had
+really great office hours where I got to sit in meets with wonderful
+people and make great connections.  This post is about my journey in
+these three months. <br /></p>
+
+<h3 id="weeks-1---4">Weeks 1 - 4</h3>
+<p>My initial goal going into the program was to write a device driver - but
+I understood very soon that I was pretty naive because I hadn’t know at
+the time what devicetree had and its significance within the kernel and
+the power it gives.  I also didn’t know how to test patches and how one
+had to set up the right environment to test code and rightly compile for
+the given architecture. <br /></p>
+
+<p>My initial spell fix and docs fix patches were in this stage where I
+decided that I had to learn these things and hence began reading driver
+code for a couple of hardware modules that I knew about. <br /></p>
+
+<p>After this, I read about dtschema and learnt how to convert txt bindings
+to yaml ones so that they allowed validation against DTS files. <br /></p>
+
+<p>Towards the end of this period, Shuah introduced my fellow mentees and me
+to Julia Lawall and the device_node auto cleanup project where it was
+desired to remove calls to <code class="language-plaintext highlighter-rouge">of_node_put()</code> and invoke it implicitly at the
+end of scope of the corresponding pointer with <code class="language-plaintext highlighter-rouge">__free(device_node)</code> written
+at the initialization. <br /></p>
+
+<h3 id="weeks-4---8">Weeks 4 - 8</h3>
+<p>In this period, I mostly worked on dtschema patches and occasionally on
+<code class="language-plaintext highlighter-rouge">of_node_put()</code> patches.  I learnt a lot about dtschema and how it
+validates the devicetree code.  I also went through the driver code to
+look at the various <code class="language-plaintext highlighter-rouge">of_*()</code> calls that were made to look at all the
+properties that were used and their type to add or remove any properties
+that were present in the txt binding and made no sense (and even sometimes
+errored or warned by the binding check, once it was converted to yaml).
+<br /></p>
+
+<p>This also helped me in my of_node_put() work as it I got to understand
+<code class="language-plaintext highlighter-rouge">device_node</code> better and how it was used in various places in the code so
+that I didn’t unnecessarily do any <code class="language-plaintext highlighter-rouge">__free()</code> to auto clean it up anywhere.
+<br /></p>
+
+<p>I also had a great time in the LKMP’24 discord server where there was
+continuous discussion on the <code class="language-plaintext highlighter-rouge">of_node_put()</code> work as it was something new
+in the kernel and everyone including me was excited.  <br /></p>
+
+<h3 id="weeks-8---12">Weeks 8 - 12</h3>
+<p>During these final few weeks I wanted to solely concentrate on <code class="language-plaintext highlighter-rouge">of_node_put()</code>
+work as my dtschema patches were now merged into the spi tree (the subsystem
+which I largely focused on).  <br /></p>
+
+<p>I wrote three patches to do auto-cleanup in soc/ti/ that went through
+critical review from Julia off-list and I’m really thankful for it as it
+shaped the patches to take a more perfect form.  <br /></p>
+
+<p>After I sent it to the list, the kernel test bot complained that it couldn’t
+compile it, which led to an interesting discussion and Julia and I worked on
+a report (which is stilla a draft) to describe the issue and give a possible
+solution, since this hadn’t really happened in the kernel and was something
+new.  The draft report can be read <a href="https://docs.google.com/document/d/16_hTLTgEIwAURGw3PS4gOJxnKxComMQsPg_0XcuKlzo/edit?usp=sharing">here</a>.  <br /></p>
+
+<p>Jonathan suggested a really clear and nice solution that I prepared as a
+v2 and which is currently under review off-list.  I also concurrently
+started working on a driver for a module that I had used a couple of
+semesters ago but which had no support in linux.  So currently I’m
+learning more stuff to write a good driver and hopefully get it merged
+into the mainline kernel. <br /></p>
+
+<p>The past 12 weeks have been so much fun.  Being an Electronics and
+Communication Engineering student, I’ve learnt so much about devicetrees
+and drivers.  <br /></p>
+
+<p>I have also attended the first ever kernel meetup that happened in
+Hyderabad, India (from where I’m from).  It was fun to meet people who
+were already working in the field and getting to know about how things
+happened and what was currently happening.  <br /></p>
+
+<p>I would like to thank Max Brown, Rob Herring, Krzysztof Kozlowski and
+Jonathan Cameron and also other maintainers and reviewers who have been
+very patient with my patches.  <br /></p>
+
+<p>I would especially like to thank Julia Lawall for carefully reviewing
+my patches and helping me on the report.  <br /></p>
+
+<p>Of course, I can’t thank Shuah Khan and Javier Carrasco enough for their
+support throughout the program.  I have really enjoyed the office hours
+every week and have learnt so much in this program.  <br /></p>
+
+<p>‘til next time, <br />
+Kousik</p>
+
+          </article>
+
+          
+
+      </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <h4>CONTACT</h4>
+
+        <div class="social-links">
+          
+            <div class="social-link contact-links">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/email.png"
+                alt="email"
+              />
+              <a href="mailto:five231003@gmail.com" id="email-link">
+                
+                  five231003@gmail.com
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <h4>FOLLOW</h4>
+
+        <div class="social-links follow-links">
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/github.png"
+                alt="github"
+              />
+              <a href="https://github.com/five-sh">
+                
+                  GitHub
+                
+              </a>
+            </div>
+
+          
+            <div class="social-link">
+
+              
+              <img
+                src="http://localhost:4000/assets/img/icons/rss.png"
+                alt="rss"
+              />
+              <a href="/feed.xml">
+                
+                  RSS
+                
+              </a>
+            </div>
+
+          
+        </div>
+      </div>
+
+      
+        <div class="footer-col footer-col-3 powered-by">
+          <p>
+            powered by <a href="https://github.com/eliottvincent/bay">Bay</a> | 2024
+          </p>
+        </div>
+      
+    </div>
+  </div>
+</footer>
+
+
+  
+
+
+
+
+
+
+    <script type="text/javascript" src="http://localhost:4000/assets/js/vendor/cash-4.1.5.min.js"></script>
+<script type="text/javascript" src="http://localhost:4000/assets/js/site.js"></script>
+
+  </body>
+</html>
