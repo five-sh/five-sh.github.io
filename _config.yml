@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: five-sh's website
+title: Kousik's website
 email: five231003@gmail.com
 description: ""
 baseurl: "" # the subpath of your site, e.g. /blog
@@ -35,7 +35,7 @@ header:
   pages:
     - name: Home
       slug: /
-    - name: Blog 
+    - name: Blog
 
 footer:
   show_powered_by: true
